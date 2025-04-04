@@ -35,3 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Etc ###
+application*.properties
+src/main/resources/config
+logs/*
+.env
