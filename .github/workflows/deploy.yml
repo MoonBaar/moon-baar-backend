@@ -88,6 +88,7 @@ jobs:
             # 환경 변수 파일 생성
             cat > .env << EOL
             DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
+            DB_HOST=${{ secrets.DB_HOST }}
             DB_NAME=${{ secrets.DB_NAME }}
             DB_USER=${{ secrets.DB_USER }}
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
@@ -97,7 +98,8 @@ jobs:
             DB_PORT=${{ secrets.DB_PORT }}
             BACKEND_IMAGE=${{ secrets.BACKEND_IMAGE }}
             EOL
-            
+            SEOUL_API_KEY=${{ secrets.SEOUL_API_KEY }}
+
             # 백엔드만 재배포
             docker-compose pull backend
             docker-compose up -d --no-deps backend
