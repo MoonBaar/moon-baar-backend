@@ -13,6 +13,24 @@ services:
       - app-network
     restart: unless-stopped
 
+  data-init:
+    build:
+      context: ./docker-files/data-init
+      dockerfile: Dockerfile
+    container_name: mb-data-init
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      SEOUL_API_KEY: ${SEOUL_API_KEY}
+    networks:
+      - app-network
+    restart: unless-stopped
+
   mariadb:
     image: mariadb:latest
     container_name: mb-mariadb
@@ -43,6 +61,7 @@ services:
       mariadb:
         condition: service_healthy
     environment:
+      - DB_HOST=${DB_HOST}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
