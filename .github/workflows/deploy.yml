@@ -97,8 +97,8 @@ jobs:
             NGINX_PORT=${{ secrets.NGINX_PORT }}
             DB_PORT=${{ secrets.DB_PORT }}
             BACKEND_IMAGE=${{ secrets.BACKEND_IMAGE }}
-            EOL
             SEOUL_API_KEY=${{ secrets.SEOUL_API_KEY }}
+            EOL
 
             # 백엔드만 재배포
             docker-compose pull backend
