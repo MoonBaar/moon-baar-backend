@@ -53,16 +53,16 @@ public class CulturalEvent extends BaseEntityWithUpdate {
     @Column(name = "etc_desc", columnDefinition = "TEXT")
     private String etcDesc;
 
-    @Column(name = "org_link")
+    @Column(name = "org_link", columnDefinition = "TEXT")
     private String orgLink;
 
-    @Column(name = "main_img")
+    @Column(name = "main_img", length = 500)
     private String mainImg;
 
     @Column
     private LocalDate rgstdate;
 
-    @Column
+    @Column(length = 50)
     private String ticket;
 
     @Column(name = "start_date", nullable = false)
@@ -71,7 +71,7 @@ public class CulturalEvent extends BaseEntityWithUpdate {
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
-    @Column
+    @Column(length = 100)
     private String themecode;
 
     @Column(precision = 10, scale = 7)
@@ -80,7 +80,7 @@ public class CulturalEvent extends BaseEntityWithUpdate {
     @Column(precision = 10, scale = 7)
     private BigDecimal longitude;
 
-    @Column(name = "is_free")
+    @Column(name = "is_free", length = 10)
     private String isFree;
 
     @Column(name = "hmpg_addr")
