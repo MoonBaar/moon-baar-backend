@@ -5,10 +5,9 @@ import com.moonbaar.domain.district.entity.District;
 import com.moonbaar.domain.event.entity.CulturalEvent;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
-public record EventSummaryResponse(
+public record EventDetailResponse(
         Long id,
         String title,
         String category,
@@ -17,33 +16,48 @@ public record EventSummaryResponse(
         LocalDateTime startDate,
         LocalDateTime endDate,
         boolean isFree,
-        String imageUrl,
+        String useFee,
+        String useTarget,
+        String player,
+        String program,
+        String etcDesc,
+        String mainImg,
+        String orgName,
+        String orgLink,
         BigDecimal latitude,
         BigDecimal longitude
-//        boolean isLiked
 ) {
 
-    public static EventSummaryResponse from(CulturalEvent event) {
+    public static EventDetailResponse from(CulturalEvent event) {
+        String categoryName = Optional.ofNullable(event.getCategory())
+                .map(Category::getName)
+                .orElse(null);
+
+        String districtName = Optional.ofNullable(event.getDistrict())
+                .map(District::getName)
+                .orElse(null);
+
         boolean isFreeEvent = "무료".equals(event.getIsFree());
 
-        return new EventSummaryResponse(
+        return new EventDetailResponse(
                 event.getId(),
                 event.getTitle(),
-                Optional.ofNullable(event.getCategory()).map(Category::getName).orElse(null),
-                Optional.ofNullable(event.getDistrict()).map(District::getName).orElse(null),
+                categoryName,
+                districtName,
                 event.getPlace(),
                 event.getStartDate(),
                 event.getEndDate(),
                 isFreeEvent,
+                event.getUseFee(),
+                event.getUseTarget(),
+                event.getPlayer(),
+                event.getProgram(),
+                event.getEtcDesc(),
                 event.getMainImg(),
+                event.getOrgName(),
+                event.getOrgLink(),
                 event.getLatitude(),
                 event.getLongitude()
         );
-    }
-
-    public static List<EventSummaryResponse> fromList(List<CulturalEvent> events) {
-        return events.stream()
-                .map(EventSummaryResponse::from)
-                .toList();
     }
 }

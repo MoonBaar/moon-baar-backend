@@ -1,13 +1,14 @@
 package com.moonbaar.domain.event.service;
 
+import com.moonbaar.domain.event.dto.EventDetailResponse;
 import com.moonbaar.domain.event.dto.EventListResponse;
 import com.moonbaar.domain.event.dto.EventSearchRequest;
 import com.moonbaar.domain.event.dto.EventSummaryResponse;
 import com.moonbaar.domain.event.entity.CulturalEvent;
+import com.moonbaar.domain.event.exeption.EventNotFoundException;
 import com.moonbaar.domain.event.repository.CulturalEventRepository;
 import com.moonbaar.domain.event.repository.EventSpecifications;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,7 +30,7 @@ public class EventService {
         Pageable pageable = createPageableWithSort(request);
 
         Page<CulturalEvent> eventPage = eventRepository.findAll(spec, pageable);
-        List<EventSummaryResponse> eventResponses = mapToEventResponses(eventPage.getContent());
+        List<EventSummaryResponse> eventResponses = EventSummaryResponse.fromList(eventPage.getContent());
 
         return createEventListResponse(eventPage, eventResponses);
     }
@@ -66,39 +67,6 @@ public class EventService {
         return "startDate"; // 기본값은 시작일
     }
 
-    private List<EventSummaryResponse> mapToEventResponses(List<CulturalEvent> events) {
-        return events.stream()
-                .map(event -> mapToEventResponse(event))
-                .toList();
-    }
-
-    private EventSummaryResponse mapToEventResponse(CulturalEvent event) {
-//        boolean isLiked = checkIfEventIsLiked(event.getId(), userId);
-        boolean isFreeEvent = "무료".equals(event.getIsFree());
-
-        return new EventSummaryResponse(
-                event.getId(),
-                event.getTitle(),
-                Optional.ofNullable(event.getCategory()).map(c -> c.getName()).orElse(null),
-                Optional.ofNullable(event.getDistrict()).map(d -> d.getName()).orElse(null),
-                event.getPlace(),
-                event.getStartDate(),
-                event.getEndDate(),
-                isFreeEvent,
-                event.getMainImg(),
-                event.getLatitude(),
-                event.getLongitude()
-//                isLiked
-        );
-    }
-
-//    private boolean checkIfEventIsLiked(Long eventId, Long userId) {
-//        if (userId == null) {
-//            return false;
-//        }
-//        return likedEventRepository.existsByEventIdAndUserId(eventId, userId);
-//    }
-
     private EventListResponse createEventListResponse(Page<CulturalEvent> eventPage, List<EventSummaryResponse> eventResponses) {
         return new EventListResponse(
                 eventPage.getTotalElements(),
@@ -106,5 +74,15 @@ public class EventService {
                 eventPage.getNumber() + 1,
                 eventResponses
         );
+    }
+
+    public EventDetailResponse getEventDetail(Long eventId) {
+        CulturalEvent event = findEventById(eventId);
+        return EventDetailResponse.from(event);
+    }
+
+    private CulturalEvent findEventById(Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(EventNotFoundException::new);
     }
 }
