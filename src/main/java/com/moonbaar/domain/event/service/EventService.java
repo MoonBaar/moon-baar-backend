@@ -1,7 +1,5 @@
 package com.moonbaar.domain.event.service;
 
-import com.moonbaar.domain.category.entity.Category;
-import com.moonbaar.domain.district.entity.District;
 import com.moonbaar.domain.event.dto.EventDetailResponse;
 import com.moonbaar.domain.event.dto.EventListResponse;
 import com.moonbaar.domain.event.dto.EventSearchRequest;
@@ -11,7 +9,6 @@ import com.moonbaar.domain.event.exeption.EventNotFoundException;
 import com.moonbaar.domain.event.repository.CulturalEventRepository;
 import com.moonbaar.domain.event.repository.EventSpecifications;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,7 +30,7 @@ public class EventService {
         Pageable pageable = createPageableWithSort(request);
 
         Page<CulturalEvent> eventPage = eventRepository.findAll(spec, pageable);
-        List<EventSummaryResponse> eventResponses = mapToEventResponses(eventPage.getContent());
+        List<EventSummaryResponse> eventResponses = EventSummaryResponse.fromList(eventPage.getContent());
 
         return createEventListResponse(eventPage, eventResponses);
     }
@@ -68,30 +65,6 @@ public class EventService {
             return "id"; // 임시로 id로 정렬(인기도 정렬은 추후 방문수와 좋아요 수 기준으로 확장)
         }
         return "startDate"; // 기본값은 시작일
-    }
-
-    private List<EventSummaryResponse> mapToEventResponses(List<CulturalEvent> events) {
-        return events.stream()
-                .map(this::mapToEventResponse)
-                .toList();
-    }
-
-    private EventSummaryResponse mapToEventResponse(CulturalEvent event) {
-        boolean isFreeEvent = "무료".equals(event.getIsFree());
-
-        return new EventSummaryResponse(
-                event.getId(),
-                event.getTitle(),
-                Optional.ofNullable(event.getCategory()).map(Category::getName).orElse(null),
-                Optional.ofNullable(event.getDistrict()).map(District::getName).orElse(null),
-                event.getPlace(),
-                event.getStartDate(),
-                event.getEndDate(),
-                isFreeEvent,
-                event.getMainImg(),
-                event.getLatitude(),
-                event.getLongitude()
-        );
     }
 
     private EventListResponse createEventListResponse(Page<CulturalEvent> eventPage, List<EventSummaryResponse> eventResponses) {
