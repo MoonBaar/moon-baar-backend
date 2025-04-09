@@ -2,10 +2,12 @@ package com.moonbaar.domain.event.service;
 
 import com.moonbaar.domain.category.entity.Category;
 import com.moonbaar.domain.district.entity.District;
+import com.moonbaar.domain.event.dto.EventDetailResponse;
 import com.moonbaar.domain.event.dto.EventListResponse;
 import com.moonbaar.domain.event.dto.EventSearchRequest;
 import com.moonbaar.domain.event.dto.EventSummaryResponse;
 import com.moonbaar.domain.event.entity.CulturalEvent;
+import com.moonbaar.domain.event.exeption.EventNotFoundException;
 import com.moonbaar.domain.event.repository.CulturalEventRepository;
 import com.moonbaar.domain.event.repository.EventSpecifications;
 import java.util.List;
@@ -99,5 +101,15 @@ public class EventService {
                 eventPage.getNumber() + 1,
                 eventResponses
         );
+    }
+
+    public EventDetailResponse getEventDetail(Long eventId) {
+        CulturalEvent event = findEventById(eventId);
+        return EventDetailResponse.from(event);
+    }
+
+    private CulturalEvent findEventById(Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(EventNotFoundException::new);
     }
 }
