@@ -2,9 +2,9 @@ name: Deploy to Development Server
 
 on:
   push:
-    branches: [test-server]
+    branches: [develop]
   pull_request:
-    branches: [test-server]
+    branches: [develop]
 
 jobs:
   build-and-deploy:
