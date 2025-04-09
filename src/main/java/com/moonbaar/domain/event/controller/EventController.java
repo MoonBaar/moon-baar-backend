@@ -1,6 +1,7 @@
 package com.moonbaar.domain.event.controller;
 
 import com.moonbaar.common.exception.BusinessException;
+import com.moonbaar.domain.event.dto.EventDetailResponse;
 import com.moonbaar.domain.event.dto.EventListResponse;
 import com.moonbaar.domain.event.dto.EventSearchRequest;
 import com.moonbaar.domain.event.exeption.EventErrorCode;
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,6 +45,11 @@ public class EventController {
         } catch (DateTimeParseException e) {
             throw new BusinessException(EventErrorCode.INVALID_EVENT_PARAMS);
         }
+    }
+
+    @GetMapping("/{eventId}")
+    public EventDetailResponse getEventDetail(@PathVariable Long eventId) {
+        return eventService.getEventDetail(eventId);
     }
 
     private EventSearchRequest createSearchRequest(
