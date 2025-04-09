@@ -1,5 +1,7 @@
 package com.moonbaar.domain.event.service;
 
+import com.moonbaar.domain.category.entity.Category;
+import com.moonbaar.domain.district.entity.District;
 import com.moonbaar.domain.event.dto.EventListResponse;
 import com.moonbaar.domain.event.dto.EventSearchRequest;
 import com.moonbaar.domain.event.dto.EventSummaryResponse;
@@ -68,19 +70,18 @@ public class EventService {
 
     private List<EventSummaryResponse> mapToEventResponses(List<CulturalEvent> events) {
         return events.stream()
-                .map(event -> mapToEventResponse(event))
+                .map(this::mapToEventResponse)
                 .toList();
     }
 
     private EventSummaryResponse mapToEventResponse(CulturalEvent event) {
-//        boolean isLiked = checkIfEventIsLiked(event.getId(), userId);
         boolean isFreeEvent = "무료".equals(event.getIsFree());
 
         return new EventSummaryResponse(
                 event.getId(),
                 event.getTitle(),
-                Optional.ofNullable(event.getCategory()).map(c -> c.getName()).orElse(null),
-                Optional.ofNullable(event.getDistrict()).map(d -> d.getName()).orElse(null),
+                Optional.ofNullable(event.getCategory()).map(Category::getName).orElse(null),
+                Optional.ofNullable(event.getDistrict()).map(District::getName).orElse(null),
                 event.getPlace(),
                 event.getStartDate(),
                 event.getEndDate(),
@@ -88,16 +89,8 @@ public class EventService {
                 event.getMainImg(),
                 event.getLatitude(),
                 event.getLongitude()
-//                isLiked
         );
     }
-
-//    private boolean checkIfEventIsLiked(Long eventId, Long userId) {
-//        if (userId == null) {
-//            return false;
-//        }
-//        return likedEventRepository.existsByEventIdAndUserId(eventId, userId);
-//    }
 
     private EventListResponse createEventListResponse(Page<CulturalEvent> eventPage, List<EventSummaryResponse> eventResponses) {
         return new EventListResponse(
