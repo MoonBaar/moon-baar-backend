@@ -24,8 +24,11 @@ public record EventDetailResponse(
         String mainImg,
         String orgName,
         String orgLink,
+        String hmpgAddr,
         BigDecimal latitude,
-        BigDecimal longitude
+        BigDecimal longitude,
+        boolean isLiked,
+        boolean isVisited
 ) {
 
     public static EventDetailResponse from(CulturalEvent event) {
@@ -56,8 +59,11 @@ public record EventDetailResponse(
                 event.getMainImg(),
                 event.getOrgName(),
                 event.getOrgLink(),
+                event.getHmpgAddr(),
                 event.getLatitude(),
-                event.getLongitude()
+                event.getLongitude(),
+                false,
+                false
         );
     }
 }
