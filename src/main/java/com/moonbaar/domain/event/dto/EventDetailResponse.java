@@ -25,7 +25,9 @@ public record EventDetailResponse(
         String orgName,
         String orgLink,
         BigDecimal latitude,
-        BigDecimal longitude
+        BigDecimal longitude,
+        boolean isLiked,
+        boolean isVisited
 ) {
 
     public static EventDetailResponse from(CulturalEvent event) {
@@ -57,7 +59,9 @@ public record EventDetailResponse(
                 event.getOrgName(),
                 event.getOrgLink(),
                 event.getLatitude(),
-                event.getLongitude()
+                event.getLongitude(),
+                false,
+                false
         );
     }
 }

@@ -57,7 +57,9 @@ class EventControllerTest {
                 "세종문화회관",
                 "https://www.seoulevent.or.kr",
                 new BigDecimal("37.5725"),
-                new BigDecimal("126.9760")
+                new BigDecimal("126.9760"),
+                false,
+                false
         );
 
         when(eventService.getEventDetail(eventId)).thenReturn(response);

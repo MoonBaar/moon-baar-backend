@@ -1,10 +1,9 @@
 package com.moonbaar.domain.event.controller;
 
-import com.moonbaar.common.exception.BusinessException;
 import com.moonbaar.domain.event.dto.EventDetailResponse;
 import com.moonbaar.domain.event.dto.EventListResponse;
 import com.moonbaar.domain.event.dto.EventSearchRequest;
-import com.moonbaar.domain.event.exeption.EventErrorCode;
+import com.moonbaar.domain.event.exeption.InvalidEventParamsException;
 import com.moonbaar.domain.event.service.EventService;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -43,7 +42,7 @@ public class EventController {
 
             return eventService.searchEvents(request);
         } catch (DateTimeParseException e) {
-            throw new BusinessException(EventErrorCode.INVALID_EVENT_PARAMS);
+            throw new InvalidEventParamsException();
         }
     }
 
@@ -78,7 +77,7 @@ public class EventController {
 
     private void validateSearchParameters(int page, int size) {
         if (page < 1 || size < 1 || size > 100) {
-            throw new BusinessException(EventErrorCode.INVALID_EVENT_PARAMS);
+            throw new InvalidEventParamsException();
         }
     }
 }
