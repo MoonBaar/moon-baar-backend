@@ -34,4 +34,8 @@ public class LikedEvent extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
     private CulturalEvent event;
+
+    public static LikedEvent of(CulturalEvent event, User user) {
+        return new LikedEvent(user, event);
+    }
 }
