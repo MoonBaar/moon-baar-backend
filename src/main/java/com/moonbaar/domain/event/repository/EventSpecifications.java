@@ -83,11 +83,16 @@ public class EventSpecifications {
             CriteriaBuilder cb,
             List<Predicate> predicates
     ) {
+        // 검색 시작일이 있는 경우: 행사 종료일 >= 검색 시작일 (또는 종료일이 null인 경우)
         if (startDate != null) {
             LocalDateTime startDateTime = startDate.atStartOfDay();
-            predicates.add(cb.greaterThanOrEqualTo(root.get("startDate"), startDateTime));
+            predicates.add(cb.or(
+                    cb.isNull(root.get("endDate")),
+                    cb.greaterThanOrEqualTo(root.get("endDate"), startDateTime)
+            ));
         }
 
+        // 검색 종료일이 있는 경우: 행사 시작일 <= 검색 종료일
         if (endDate != null) {
             LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
             predicates.add(cb.lessThan(root.get("startDate"), endDateTime));
