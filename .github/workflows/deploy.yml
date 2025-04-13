@@ -69,8 +69,7 @@ jobs:
           target: "${{ secrets.DEPLOY_PATH }}"
           strip_components: 0
           timeout: 60s
-          retries: 5
-          retry_wait: 10
+          command_timeout: 60s
 
       # 백엔드 배포
       - name: Deploy backend
@@ -80,6 +79,7 @@ jobs:
           port: ${{ secrets.PORT }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          
           script: |
             cd ${{ secrets.DEPLOY_PATH }}
 
@@ -110,3 +110,7 @@ jobs:
             
             # 미사용 이미지 정리
             docker image prune -f --filter "until=168h"
+          timeout: 60s
+          command_timeout: 60s
+          retries: 5
+          retry_wait: 10
