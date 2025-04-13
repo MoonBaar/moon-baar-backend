@@ -34,4 +34,10 @@ public class User extends BaseEntityWithUpdate {
 
     @Column(name = "profile_image_url")
     private String profileImageUrl;
+
+    public User update(String nickname, String profileImageUrl) {
+        this.nickname = nickname;
+        this.profileImageUrl = profileImageUrl;
+        return this;
+    }
 }

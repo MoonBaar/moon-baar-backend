@@ -1,18 +1,26 @@
 package com.moonbaar.common.config;
 
-import java.util.Arrays;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -20,8 +28,15 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/events/**", "/categories/**", "/districts/**", "/users/**").permitAll()  // 공개 API 경로
+                        .requestMatchers("/login", "/oauth2/**", "/events/**", "/categories/**", "/districts/**", "/users/**").permitAll()  // 공개 API 경로
                         .anyRequest().authenticated()  // 나머지 경로는 인증 필요
+                )
+
+                // OAuth2 로그인 설정
+                .oauth2Login(oauth -> oauth
+                        // 로그인 후 사용자 정보 가져올 때 사용할 서비스 지정
+                        .userInfoEndpoint(userInfo -> userInfo .userService(customOAuth2UserService))
+                        .defaultSuccessUrl("/", true)
                 );
 
         return http.build();
