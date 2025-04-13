@@ -68,6 +68,9 @@ jobs:
           source: "docker-compose.yml,docker-files/nginx/"
           target: "${{ secrets.DEPLOY_PATH }}"
           strip_components: 0
+          timeout: 60s
+          retries: 5
+          retry_wait: 10
 
       # 백엔드 배포
       - name: Deploy backend
