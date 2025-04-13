@@ -35,7 +35,7 @@ public class LikedEvent extends BaseEntity {
     @JoinColumn(name = "event_id", nullable = false)
     private CulturalEvent event;
 
-    public static LikedEvent of(CulturalEvent event, User user) {
+    public static LikedEvent of(User user, CulturalEvent event) {
         return new LikedEvent(user, event);
     }
 }

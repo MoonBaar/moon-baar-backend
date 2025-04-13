@@ -30,7 +30,7 @@ public class LikeService {
 
         checkNotAlreadyLiked(user, event);
 
-        LikedEvent likedEvent = LikedEvent.of(event, user);
+        LikedEvent likedEvent = LikedEvent.of(user, event);
         likedEventRepository.save(likedEvent);
 
         return LikeResponse.of(eventId, true);
