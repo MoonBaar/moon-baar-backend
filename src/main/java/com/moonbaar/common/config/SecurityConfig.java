@@ -1,5 +1,6 @@
 package com.moonbaar.common.config;
 
+import com.moonbaar.common.oauth.handler.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,7 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -36,7 +38,7 @@ public class SecurityConfig {
                 .oauth2Login(oauth -> oauth
                         // 로그인 후 사용자 정보 가져올 때 사용할 서비스 지정
                         .userInfoEndpoint(userInfo -> userInfo .userService(customOAuth2UserService))
-                        .defaultSuccessUrl("/", true)
+                        .successHandler(oAuth2SuccessHandler)
                 );
 
         return http.build();
