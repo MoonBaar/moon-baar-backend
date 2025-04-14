@@ -1,4 +1,4 @@
-package com.moonbaar.common.dto;
+package com.moonbaar.common.oauth.dto;
 
 import com.moonbaar.domain.user.entity.User;
 import lombok.extern.slf4j.Slf4j;

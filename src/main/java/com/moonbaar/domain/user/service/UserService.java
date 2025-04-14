@@ -1,7 +1,7 @@
 package com.moonbaar.domain.user.service;
 
 
-import com.moonbaar.common.dto.OAuthAttributes;
+import com.moonbaar.common.oauth.dto.OAuthAttributes;
 import com.moonbaar.domain.user.entity.User;
 import com.moonbaar.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
