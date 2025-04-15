@@ -22,7 +22,7 @@ public class LikeController {
 
     @PostMapping("/{eventId}/like")
     public ResponseEntity<LikeResponse> likeEvent(@PathVariable Long eventId) {
-        LikeResponse response = likeService.likeEvent(eventId, MOCK_USER_ID);
+        LikeResponse response = likeService.likeEvent(MOCK_USER_ID, eventId);
         return ResponseEntity.ok(response);
     }
 
