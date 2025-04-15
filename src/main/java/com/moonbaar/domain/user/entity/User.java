@@ -35,9 +35,16 @@ public class User extends BaseEntityWithUpdate {
     @Column(name = "profile_image_url")
     private String profileImageUrl;
 
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
     public User update(String nickname, String profileImageUrl) {
         this.nickname = nickname;
         this.profileImageUrl = profileImageUrl;
         return this;
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }

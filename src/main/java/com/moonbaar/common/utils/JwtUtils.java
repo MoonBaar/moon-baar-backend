@@ -25,6 +25,7 @@ public class JwtUtils {
     private Key key;
 
     private final long ACCESS_TOKEN_EXPIRATION = 1000L * 60 * 30; // 30분
+    private final long REFRESH_TOKEN_EXPIRATION = 1000L * 60 * 60 * 24; // 1일
 
     @PostConstruct
     public void init() {
@@ -32,12 +33,23 @@ public class JwtUtils {
     }
 
     // Access Token 생성
-    public String generateAccessToken(Long userId, String role) {
+    public String generateAccessToken(Long userId) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + ACCESS_TOKEN_EXPIRATION);
         return Jwts.builder()
             .setSubject(String.valueOf(userId))
-            .claim("role", role)
+            .setIssuedAt(now)
+            .setExpiration(expiry)
+            .signWith(key, SignatureAlgorithm.HS256)
+            .compact();
+    }
+
+    // Refresh Token 생성
+    public String generateRefreshToken(Long userId) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + REFRESH_TOKEN_EXPIRATION);
+        return Jwts.builder()
+            .setSubject(String.valueOf(userId))
             .setIssuedAt(now)
             .setExpiration(expiry)
             .signWith(key, SignatureAlgorithm.HS256)
@@ -47,11 +59,6 @@ public class JwtUtils {
     // token에서 userId 추출
     public Long getUserId(String token) {
         return Long.valueOf(parseClaims(token).getSubject());
-    }
-
-    // token에서 role 추출
-    public String getRole(String token) {
-        return parseClaims(token).get("role", String.class);
     }
 
     // 토큰 유효성 검사

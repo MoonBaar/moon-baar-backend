@@ -1,11 +1,10 @@
 package com.moonbaar.common.oauth.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moonbaar.common.oauth.CustomOAuth2User;
 import com.moonbaar.common.utils.JwtUtils;
 import com.moonbaar.domain.user.entity.User;
+import com.moonbaar.domain.user.exception.UserNotFoundException;
 import com.moonbaar.domain.user.repository.UserRepository;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,32 +23,44 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
-    private final ObjectMapper objectMapper;
 
     @Value("${frontend.redirect-url}")
     private String redirectUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-        Authentication authentication) throws IOException, ServletException {
+        Authentication authentication) throws IOException {
 
         // 사용자 정보 가져오기
         CustomOAuth2User  oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         Long userId = oAuth2User.getUserId();
         User user = userRepository.findById(userId)
-            .orElseThrow(()-> new IllegalArgumentException("로그인된 사용자가 DB에 존재하지 않습니다."));
+            .orElseThrow(() -> new UserNotFoundException());
 
         // JWT 발급
-        String accessToken = jwtUtils.generateAccessToken(user.getId(), "ROLE_USER");
+        String accessToken = jwtUtils.generateAccessToken(user.getId());
+        String refreshToken = jwtUtils.generateRefreshToken(user.getId());
 
-        Cookie cookie = new Cookie("accessToken", accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 30); // 30분
-        cookie.setAttribute("SameSite", "Lax");
+        // DB에 refreshToken 저장
+        user.updateRefreshToken(refreshToken);
+        userRepository.save(user);
 
-        response.addCookie(cookie);
+        Cookie accessCookie = new Cookie("accessToken", accessToken);
+        accessCookie.setHttpOnly(true);
+        accessCookie.setSecure(true);
+        accessCookie.setPath("/");
+        accessCookie.setMaxAge(60 * 30); // 30분
+        accessCookie.setAttribute("SameSite", "Lax");
+
+        Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setSecure(true);
+        refreshCookie.setPath("/");
+        refreshCookie.setMaxAge(60 * 60 * 24);  // 1일
+        refreshCookie.setAttribute("SameSite", "Lax");
+
+        response.addCookie(accessCookie);
+        response.addCookie(refreshCookie);
 
         response.sendRedirect(redirectUrl + "/login-success");
     }
