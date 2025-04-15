@@ -1,6 +1,7 @@
 package com.moonbaar.domain.user.service;
 
 
+import com.moonbaar.common.oauth.TokenBlackList;
 import com.moonbaar.common.oauth.dto.OAuthAttributes;
 import com.moonbaar.common.utils.JwtUtils;
 import com.moonbaar.domain.user.entity.User;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
+    private final TokenBlackList tokenBlackList;
 
     @Transactional
     public User saveOrUpdate(OAuthAttributes attributes, String registrationId) {
@@ -31,7 +34,7 @@ public class UserService {
     // Refresh Token로 Access Token 재발급
     public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
         // 쿠키에서 refreshToken 추출
-        String refreshToken = getCookieValueByName(request, "refreshToken");
+        String refreshToken = jwtUtils.resolveToken(request, "refreshToken");
 
         // refreshToken 누락
         if (refreshToken == null) {
@@ -63,20 +66,35 @@ public class UserService {
         response.addCookie(accessCookie);
     }
 
-
-    /**
-     * 요청에서 특정 이름의 쿠키 값을 반환
-     * @param request   HttpServletRequest 객체
-     * @param name      찾고자 하는 Cookie 이름
-     * @return          찾고자 하는 Cookie 값, 없으면 null
-     */
-    private String getCookieValueByName(HttpServletRequest request, String name) {
-        if (request.getCookies() == null) return null;
-        for (Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equals(name)) {
-                return cookie.getValue();
-            }
+    @Transactional
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        // 블랙리스트에 accessToken  추가
+        String accessToken = jwtUtils.resolveToken(request, "accessToken");
+        if (accessToken != null && jwtUtils.isValid(accessToken)) {
+            LocalDateTime expiresAt = jwtUtils.getExpiration(accessToken);
+            tokenBlackList.add(accessToken, expiresAt);
         }
-        return null;
+
+        // DB에서 refreshToken 삭제
+        String refreshToken = jwtUtils.resolveToken(request, "refreshToken");
+        if (refreshToken != null && jwtUtils.isValid(refreshToken)) {
+            Long userId = jwtUtils.getUserId(refreshToken);
+            userRepository.findById(userId).ifPresent(user -> user.removeRefreshToken());
+        }
+
+        // 쿠키에서 토큰 제거
+        deleteCookie("accessToken", response);
+        deleteCookie("refreshToken", response);
+    }
+
+
+
+    private void deleteCookie(String name, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
     }
 }

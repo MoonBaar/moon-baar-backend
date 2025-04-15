@@ -34,6 +34,11 @@ public class UserController {
         return ResponseEntity.ok("Access Token 재발급 완료");
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        userService.logout(request, response);
+        return ResponseEntity.ok().build();
+    }
     @GetMapping("/me/likes")
     public ResponseEntity<LikedEventListResponse> getLikedEvents(
             @ModelAttribute @Valid LikedEventListRequest request) {
