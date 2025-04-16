@@ -4,6 +4,8 @@ import com.moonbaar.domain.event.entity.CulturalEvent;
 import com.moonbaar.domain.event.exeption.EventNotFoundException;
 import com.moonbaar.domain.event.repository.CulturalEventRepository;
 import com.moonbaar.domain.like.dto.LikeResponse;
+import com.moonbaar.domain.like.dto.LikedEventListRequest;
+import com.moonbaar.domain.like.dto.LikedEventListResponse;
 import com.moonbaar.domain.like.entity.LikedEvent;
 import com.moonbaar.domain.like.exception.AlreadyLikedEventException;
 import com.moonbaar.domain.like.exception.LikeNotFoundException;
@@ -12,6 +14,8 @@ import com.moonbaar.domain.user.entity.User;
 import com.moonbaar.domain.user.exception.UserNotFoundException;
 import com.moonbaar.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,5 +73,14 @@ public class LikeService {
     private LikedEvent findLikedEvent(User user, CulturalEvent event) {
         return likedEventRepository.findByUserAndEvent(user, event)
                 .orElseThrow(LikeNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public LikedEventListResponse getLikedEvents(Long userId, LikedEventListRequest request) {
+        User user = findUser(userId);
+        Pageable pageable = request.toPageable();
+
+        Page<LikedEvent> likedEventsPage = likedEventRepository.findByUser(user, pageable);
+        return LikedEventListResponse.from(likedEventsPage);
     }
 }
