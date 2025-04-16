@@ -11,9 +11,7 @@ import com.moonbaar.domain.event.repository.EventSpecifications;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +25,7 @@ public class EventService {
 
     public EventListResponse searchEvents(EventSearchRequest request) {
         Specification<CulturalEvent> spec = createSearchSpecification(request);
-        Pageable pageable = createPageableWithSort(request);
+        Pageable pageable = request.toPageable();
 
         Page<CulturalEvent> eventPage = eventRepository.findAll(spec, pageable);
         List<EventSummaryResponse> eventResponses = EventSummaryResponse.fromList(eventPage.getContent());
@@ -44,27 +42,6 @@ public class EventService {
                 request.endDate(),
                 request.isFree()
         );
-    }
-
-    private Pageable createPageableWithSort(EventSearchRequest request) {
-        Sort sort = createSortCriteria(request.sort(), request.order());
-        return PageRequest.of(request.page() - 1, request.size(), sort);
-    }
-
-    private Sort createSortCriteria(String sortBy, String order) {
-        Sort.Direction direction = "desc".equalsIgnoreCase(order)
-                ? Sort.Direction.DESC
-                : Sort.Direction.ASC;
-
-        String sortProperty = determineSortProperty(sortBy);
-        return Sort.by(direction, sortProperty);
-    }
-
-    private String determineSortProperty(String sortBy) {
-        if ("popularity".equals(sortBy)) {
-            return "id"; // 임시로 id로 정렬(인기도 정렬은 추후 방문수와 좋아요 수 기준으로 확장)
-        }
-        return "startDate"; // 기본값은 시작일
     }
 
     private EventListResponse createEventListResponse(Page<CulturalEvent> eventPage, List<EventSummaryResponse> eventResponses) {
