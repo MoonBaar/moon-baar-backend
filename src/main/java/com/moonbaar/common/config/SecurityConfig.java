@@ -39,6 +39,8 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
                 // OAuth2 로그인 설정
+                .formLogin(form -> form.disable())
+                .logout(logout -> logout.disable())
                 .oauth2Login(oauth -> oauth
                         // 로그인 후 사용자 정보 가져올 때 사용할 서비스 지정
                         .userInfoEndpoint(userInfo -> userInfo .userService(customOAuth2UserService))
