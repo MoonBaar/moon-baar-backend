@@ -1,5 +1,6 @@
 package com.moonbaar.common.config;
 
+import com.moonbaar.common.filter.JwtAuthenticationFilter;
 import com.moonbaar.common.oauth.handler.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -23,6 +25,7 @@ public class SecurityConfig {
 
     private final OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,6 +36,7 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/oauth2/**", "/events/**", "/categories/**", "/districts/**", "/users/**").permitAll()  // 공개 API 경로
                         .anyRequest().authenticated()  // 나머지 경로는 인증 필요
                 )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
                 // OAuth2 로그인 설정
                 .oauth2Login(oauth -> oauth
