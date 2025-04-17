@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,6 +24,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
     private final TokenBlackList tokenBlackList;
+
+    @Value("${jwt.access-token-expiration}")
+    private long accessTokenExpirationMs;
 
     @Transactional
     public User saveOrUpdate(OAuthAttributes attributes, String registrationId) {
@@ -60,7 +64,7 @@ public class UserService {
         accessCookie.setHttpOnly(true);
         accessCookie.setSecure(true);
         accessCookie.setPath("/");
-        accessCookie.setMaxAge(60 * 30); // 30분
+        accessCookie.setMaxAge((int) (accessTokenExpirationMs / 1000));
         accessCookie.setAttribute("SameSite", "Lax");
 
         response.addCookie(accessCookie);

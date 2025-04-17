@@ -27,6 +27,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     @Value("${frontend.redirect-url}")
     private String redirectUrl;
 
+    @Value("${jwt.access-token-expiration}")
+    private long accessTokenExpirationMs;
+
+    @Value("${jwt.refresh-token-expiration}")
+    private long refreshTokenExpirationMs;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
         Authentication authentication) throws IOException {
@@ -49,14 +55,14 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         accessCookie.setHttpOnly(true);
         accessCookie.setSecure(true);
         accessCookie.setPath("/");
-        accessCookie.setMaxAge(60 * 30); // 30분
+        accessCookie.setMaxAge((int) (accessTokenExpirationMs / 1000));
         accessCookie.setAttribute("SameSite", "Lax");
 
         Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
         refreshCookie.setHttpOnly(true);
         refreshCookie.setSecure(true);
         refreshCookie.setPath("/");
-        refreshCookie.setMaxAge(60 * 60 * 24);  // 1일
+        refreshCookie.setMaxAge((int) (refreshTokenExpirationMs / 1000));
         refreshCookie.setAttribute("SameSite", "Lax");
 
         response.addCookie(accessCookie);

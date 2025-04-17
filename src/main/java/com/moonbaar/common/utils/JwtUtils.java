@@ -29,8 +29,10 @@ public class JwtUtils {
     private String secretKey;
     private Key key;
 
-    private final long ACCESS_TOKEN_EXPIRATION = 1000L * 60 * 30; // 30분
-    private final long REFRESH_TOKEN_EXPIRATION = 1000L * 60 * 60 * 24; // 1일
+    @Value("${jwt.access-token-expiration}")
+    private long accessTokenExpiration;
+    @Value("${jwt.refresh-token-expiration}")
+    private long refreshTokenExpiration;
 
     @PostConstruct
     public void init() {
@@ -40,7 +42,7 @@ public class JwtUtils {
     // Access Token 생성
     public String generateAccessToken(Long userId) {
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + ACCESS_TOKEN_EXPIRATION);
+        Date expiry = new Date(now.getTime() + accessTokenExpiration);
         return Jwts.builder()
             .setSubject(String.valueOf(userId))
             .setIssuedAt(now)
@@ -52,7 +54,7 @@ public class JwtUtils {
     // Refresh Token 생성
     public String generateRefreshToken(Long userId) {
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + REFRESH_TOKEN_EXPIRATION);
+        Date expiry = new Date(now.getTime() + refreshTokenExpiration);
         return Jwts.builder()
             .setSubject(String.valueOf(userId))
             .setIssuedAt(now)
