@@ -27,11 +27,9 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle-
 
       # 서브모듈 설정
-      - name: Setup submodule
+      - name: Update submodule
         run: |
-          cd src/main/resources/config
-          git pull
-          cd ../../../../
+          git submodule update --init --remote --merge
 
       # GitHub Container Registry 로그인
       - name: Login to GitHub Container Registry
