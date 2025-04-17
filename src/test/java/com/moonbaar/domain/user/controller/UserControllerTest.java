@@ -67,12 +67,12 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.totalCount").value(2))
                 .andExpect(jsonPath("$.totalPages").value(1))
                 .andExpect(jsonPath("$.currentPage").value(1))
-                .andExpect(jsonPath("$.likes").isArray())
-                .andExpect(jsonPath("$.likes.length()").value(2))
-                .andExpect(jsonPath("$.likes[0].eventId").value(1))
-                .andExpect(jsonPath("$.likes[0].title").value("서울시극단 [코믹]"))
-                .andExpect(jsonPath("$.likes[1].eventId").value(2))
-                .andExpect(jsonPath("$.likes[1].title").value("[노원문화원] 국악예술단 정기공연"));
+                .andExpect(jsonPath("$.events").isArray())
+                .andExpect(jsonPath("$.events.length()").value(2))
+                .andExpect(jsonPath("$.events[0].id").value(1))
+                .andExpect(jsonPath("$.events[0].title").value("서울시극단 [코믹]"))
+                .andExpect(jsonPath("$.events[1].id").value(2))
+                .andExpect(jsonPath("$.events[1].title").value("[노원문화원] 국악예술단 정기공연"));
 
         // 서비스에 전달된 요청 객체 검증
         LikedEventListRequest capturedRequest = requestCaptor.getValue();

@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record LikedEventResponse(
-        Long eventId,
+        Long id,
         String title,
         String place,
         LocalDateTime startDate,
