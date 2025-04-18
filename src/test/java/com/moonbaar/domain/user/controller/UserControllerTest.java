@@ -44,13 +44,11 @@ public class UserControllerTest {
         LocalDateTime now = LocalDateTime.now();
         LikedEventResponse event1 = new LikedEventResponse(
                 1L, "서울시극단 [코믹]", "세종M씨어터",
-                now.plusDays(1), now.plusDays(3), "https://example.com/image1.jpg",
-                now.minusDays(1));
+                now.plusDays(1), now.plusDays(3), "https://example.com/image1.jpg");
 
         LikedEventResponse event2 = new LikedEventResponse(
                 2L, "[노원문화원] 국악예술단 정기공연", "노원문화예술회관 대공연장",
-                now.plusDays(2), now.plusDays(4), "https://example.com/image2.jpg",
-                now.minusDays(2));
+                now.plusDays(2), now.plusDays(4), "https://example.com/image2.jpg");
 
         LikedEventListResponse response = new LikedEventListResponse(
                 2L, 1, 1, List.of(event1, event2));
@@ -67,12 +65,12 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.totalCount").value(2))
                 .andExpect(jsonPath("$.totalPages").value(1))
                 .andExpect(jsonPath("$.currentPage").value(1))
-                .andExpect(jsonPath("$.likes").isArray())
-                .andExpect(jsonPath("$.likes.length()").value(2))
-                .andExpect(jsonPath("$.likes[0].eventId").value(1))
-                .andExpect(jsonPath("$.likes[0].title").value("서울시극단 [코믹]"))
-                .andExpect(jsonPath("$.likes[1].eventId").value(2))
-                .andExpect(jsonPath("$.likes[1].title").value("[노원문화원] 국악예술단 정기공연"));
+                .andExpect(jsonPath("$.events").isArray())
+                .andExpect(jsonPath("$.events.length()").value(2))
+                .andExpect(jsonPath("$.events[0].id").value(1))
+                .andExpect(jsonPath("$.events[0].title").value("서울시극단 [코믹]"))
+                .andExpect(jsonPath("$.events[1].id").value(2))
+                .andExpect(jsonPath("$.events[1].title").value("[노원문화원] 국악예술단 정기공연"));
 
         // 서비스에 전달된 요청 객체 검증
         LikedEventListRequest capturedRequest = requestCaptor.getValue();

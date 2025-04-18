@@ -6,13 +6,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record LikedEventResponse(
-        Long eventId,
+        Long id,
         String title,
         String place,
         LocalDateTime startDate,
         LocalDateTime endDate,
-        String mainImg,
-        LocalDateTime likedAt
+        String mainImg
 ) {
 
     public static LikedEventResponse from(LikedEvent likedEvent) {
@@ -23,8 +22,7 @@ public record LikedEventResponse(
                 event.getPlace(),
                 event.getStartDate(),
                 event.getEndDate(),
-                event.getMainImg(),
-                likedEvent.getCreatedAt()
+                event.getMainImg()
         );
     }
 

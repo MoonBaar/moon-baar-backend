@@ -8,7 +8,7 @@ public record LikedEventListResponse(
         Long totalCount,
         int totalPages,
         int currentPage,
-        List<LikedEventResponse> likes
+        List<LikedEventResponse> events
 ) {
 
     public static LikedEventListResponse from(Page<LikedEvent> likedEvents) {
