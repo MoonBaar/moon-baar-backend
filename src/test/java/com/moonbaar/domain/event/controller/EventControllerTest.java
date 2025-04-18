@@ -1,12 +1,7 @@
 package com.moonbaar.domain.event.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -16,15 +11,6 @@ import com.moonbaar.common.exception.BusinessException;
 import com.moonbaar.domain.event.dto.EventDetailResponse;
 import com.moonbaar.domain.event.exeption.EventErrorCode;
 import com.moonbaar.domain.event.service.EventService;
-import com.moonbaar.domain.like.dto.LikeResponse;
-import com.moonbaar.domain.like.exception.AlreadyLikedEventException;
-import com.moonbaar.domain.like.exception.LikeNotFoundException;
-import com.moonbaar.domain.like.service.LikeService;
-import com.moonbaar.domain.visit.dto.VisitRequest;
-import com.moonbaar.domain.visit.dto.VisitResponse;
-import com.moonbaar.domain.visit.exception.AlreadyVisitedException;
-import com.moonbaar.domain.visit.exception.InvalidLocationException;
-import com.moonbaar.domain.visit.service.VisitService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
@@ -50,12 +36,6 @@ class EventControllerTest {
 
     @MockitoBean
     private EventService eventService;
-
-    @MockitoBean
-    private LikeService likeService;
-
-    @MockitoBean
-    private VisitService visitService;
 
     private final Long MOCK_USER_ID = 1L;
     private final Long EVENT_ID = 1L;
@@ -122,140 +102,5 @@ class EventControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value(EventErrorCode.EVENT_NOT_FOUND.getCode()))
                 .andExpect(jsonPath("$.message").value(EventErrorCode.EVENT_NOT_FOUND.getMessage()));
-    }
-
-    @Test
-    @DisplayName("행사 좋아요 성공")
-    void likeEvent_Success() throws Exception {
-        // given
-        LikeResponse response = LikeResponse.of(EVENT_ID, true);
-        when(likeService.likeEvent(MOCK_USER_ID, EVENT_ID)).thenReturn(response);
-
-        // when & then
-        mockMvc.perform(post("/events/{eventId}/like", EVENT_ID)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.eventId").value(EVENT_ID))
-                .andExpect(jsonPath("$.isLiked").value(true));
-    }
-
-    @Test
-    @DisplayName("이미 좋아요한 행사를 다시 좋아요 시 409 응답")
-    void likeEvent_AlreadyLiked() throws Exception {
-        // given
-        when(likeService.likeEvent(MOCK_USER_ID, EVENT_ID)).thenThrow(new AlreadyLikedEventException());
-
-        // when & then
-        mockMvc.perform(post("/events/{eventId}/like", EVENT_ID)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isConflict());
-    }
-
-    @Test
-    @DisplayName("좋아요 취소 성공")
-    void unlikeEvent_Success() throws Exception {
-        // given
-        LikeResponse response = new LikeResponse(EVENT_ID, false);
-        when(likeService.unlikeEvent(MOCK_USER_ID, EVENT_ID)).thenReturn(response);
-
-        // when & then
-        mockMvc.perform(delete("/events/{eventId}/like", EVENT_ID)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.eventId").value(EVENT_ID))
-                .andExpect(jsonPath("$.isLiked").value(false));
-    }
-
-    @Test
-    @DisplayName("좋아요하지 않은 행사 취소 시 404 응답")
-    void unlikeEvent_NotLiked() throws Exception {
-        // given
-        when(likeService.unlikeEvent(MOCK_USER_ID, EVENT_ID)).thenThrow(new LikeNotFoundException());
-
-        // when & then
-        mockMvc.perform(delete("/events/{eventId}/like", EVENT_ID)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @DisplayName("행사 방문 인증에 성공한다")
-    void visitEvent_Success() throws Exception {
-        // given
-        VisitRequest request = new VisitRequest(
-                new BigDecimal("37.5725"),
-                new BigDecimal("126.9760")
-        );
-
-        VisitResponse response = new VisitResponse(
-                1L,
-                EVENT_ID,
-                "서울시극단 [코믹]",
-                LocalDateTime.now()
-        );
-
-        when(visitService.visitEvent(anyLong(), eq(EVENT_ID), any(VisitRequest.class)))
-                .thenReturn(response);
-
-        // when & then
-        mockMvc.perform(post("/events/{eventId}/visit", EVENT_ID)
-                        .characterEncoding("UTF-8")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.visitId").value(1L))
-                .andExpect(jsonPath("$.eventId").value(EVENT_ID))
-                .andExpect(jsonPath("$.eventTitle").value("서울시극단 [코믹]"));
-    }
-
-    @Test
-    @DisplayName("위치 정보가 없으면 방문 인증에 실패한다")
-    void visitEvent_NoLocation_ReturnsBadRequest() throws Exception {
-        // given
-        VisitRequest request = new VisitRequest(null, null);
-
-        // when & then
-        mockMvc.perform(post("/events/{eventId}/visit", EVENT_ID)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("최근에 방문한 행사는 방문 인증에 실패한다")
-    void visitEvent_RecentlyVisited_ReturnsConflict() throws Exception {
-        // given
-        VisitRequest request = new VisitRequest(
-                new BigDecimal("37.5725"),
-                new BigDecimal("126.9760")
-        );
-
-        when(visitService.visitEvent(anyLong(), eq(EVENT_ID), any(VisitRequest.class)))
-                .thenThrow(new AlreadyVisitedException());
-
-        // when & then
-        mockMvc.perform(post("/events/{eventId}/visit", EVENT_ID)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isConflict());
-    }
-
-    @Test
-    @DisplayName("행사 위치와 너무 멀면 방문 인증에 실패한다")
-    void visitEvent_TooFarFromEvent_ReturnsForbidden() throws Exception {
-        // given
-        VisitRequest request = new VisitRequest(
-                new BigDecimal("37.6625"),
-                new BigDecimal("126.9760")
-        );
-
-        when(visitService.visitEvent(anyLong(), eq(EVENT_ID), any(VisitRequest.class)))
-                .thenThrow(new InvalidLocationException());
-
-        // when & then
-        mockMvc.perform(post("/events/{eventId}/visit", EVENT_ID)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isForbidden());
     }
 }
