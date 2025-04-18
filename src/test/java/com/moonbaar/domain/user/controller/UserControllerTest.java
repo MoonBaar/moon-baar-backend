@@ -13,12 +13,14 @@ import com.moonbaar.domain.like.dto.LikedEventListRequest;
 import com.moonbaar.domain.like.dto.LikedEventListResponse;
 import com.moonbaar.domain.like.dto.LikedEventResponse;
 import com.moonbaar.domain.like.service.LikeService;
+import com.moonbaar.domain.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -27,10 +29,14 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(UserController.class)
 @Import(SecurityTestConfig.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    private UserService userService;
 
     @MockitoBean
     private LikeService likeService;
