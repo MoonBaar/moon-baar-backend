@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @Validated
-public class FootPrintController {
+public class FootprintController {
 
     // 임시 유저 아이디
     private Long MOCK_USER_ID = 1L;
