@@ -44,13 +44,11 @@ public class UserControllerTest {
         LocalDateTime now = LocalDateTime.now();
         LikedEventResponse event1 = new LikedEventResponse(
                 1L, "서울시극단 [코믹]", "세종M씨어터",
-                now.plusDays(1), now.plusDays(3), "https://example.com/image1.jpg",
-                now.minusDays(1));
+                now.plusDays(1), now.plusDays(3), "https://example.com/image1.jpg");
 
         LikedEventResponse event2 = new LikedEventResponse(
                 2L, "[노원문화원] 국악예술단 정기공연", "노원문화예술회관 대공연장",
-                now.plusDays(2), now.plusDays(4), "https://example.com/image2.jpg",
-                now.minusDays(2));
+                now.plusDays(2), now.plusDays(4), "https://example.com/image2.jpg");
 
         LikedEventListResponse response = new LikedEventListResponse(
                 2L, 1, 1, List.of(event1, event2));

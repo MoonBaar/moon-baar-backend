@@ -11,8 +11,7 @@ public record LikedEventResponse(
         String place,
         LocalDateTime startDate,
         LocalDateTime endDate,
-        String mainImg,
-        LocalDateTime likedAt
+        String mainImg
 ) {
 
     public static LikedEventResponse from(LikedEvent likedEvent) {
@@ -23,8 +22,7 @@ public record LikedEventResponse(
                 event.getPlace(),
                 event.getStartDate(),
                 event.getEndDate(),
-                event.getMainImg(),
-                likedEvent.getCreatedAt()
+                event.getMainImg()
         );
     }
 
