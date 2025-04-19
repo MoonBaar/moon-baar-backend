@@ -52,7 +52,7 @@ public class UserService {
 
         // DB에 저장된 refreshToken과 비교
         Long userId = jwtUtils.getUserId(refreshToken);
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         if (!refreshToken.equals(user.getRefreshToken())) {
             throw new UserAccessDeniedException();
         }
@@ -83,15 +83,13 @@ public class UserService {
         String refreshToken = jwtUtils.resolveToken(request, "refreshToken");
         if (refreshToken != null && jwtUtils.isValid(refreshToken)) {
             Long userId = jwtUtils.getUserId(refreshToken);
-            userRepository.findById(userId).ifPresent(user -> user.removeRefreshToken());
+            userRepository.findById(userId).ifPresent(User::removeRefreshToken);
         }
 
         // 쿠키에서 토큰 제거
         deleteCookie("accessToken", response);
         deleteCookie("refreshToken", response);
     }
-
-
 
     private void deleteCookie(String name, HttpServletResponse response) {
         Cookie cookie = new Cookie(name, null);
@@ -100,5 +98,10 @@ public class UserService {
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         response.addCookie(cookie);
+    }
+
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
     }
 }

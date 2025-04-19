@@ -54,11 +54,11 @@ public class EventService {
     }
 
     public EventDetailResponse getEventDetail(Long eventId) {
-        CulturalEvent event = findEventById(eventId);
+        CulturalEvent event = getEventById(eventId);
         return EventDetailResponse.from(event);
     }
 
-    private CulturalEvent findEventById(Long eventId) {
+    public CulturalEvent getEventById(Long eventId) {
         return eventRepository.findById(eventId)
                 .orElseThrow(EventNotFoundException::new);
     }

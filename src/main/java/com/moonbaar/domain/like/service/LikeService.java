@@ -1,8 +1,7 @@
 package com.moonbaar.domain.like.service;
 
 import com.moonbaar.domain.event.entity.CulturalEvent;
-import com.moonbaar.domain.event.exeption.EventNotFoundException;
-import com.moonbaar.domain.event.repository.CulturalEventRepository;
+import com.moonbaar.domain.event.service.EventService;
 import com.moonbaar.domain.like.dto.LikeResponse;
 import com.moonbaar.domain.like.dto.LikedEventListRequest;
 import com.moonbaar.domain.like.dto.LikedEventListResponse;
@@ -11,8 +10,7 @@ import com.moonbaar.domain.like.exception.AlreadyLikedEventException;
 import com.moonbaar.domain.like.exception.LikeNotFoundException;
 import com.moonbaar.domain.like.repository.LikedEventRepository;
 import com.moonbaar.domain.user.entity.User;
-import com.moonbaar.domain.user.exception.UserNotFoundException;
-import com.moonbaar.domain.user.repository.UserRepository;
+import com.moonbaar.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,14 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LikeService {
 
-    private final UserRepository userRepository;
-    private final CulturalEventRepository culturalEventRepository;
+    private final UserService userService;
+    private final EventService eventService;
     private final LikedEventRepository likedEventRepository;
 
     @Transactional
     public LikeResponse likeEvent(Long userId, Long eventId) {
-        User user = findUser(userId);
-        CulturalEvent event = findEvent(eventId);
+        User user = userService.getUserById(userId);
+        CulturalEvent event = eventService.getEventById(eventId);
 
         checkNotAlreadyLiked(user, event);
 
@@ -45,23 +43,13 @@ public class LikeService {
 
     @Transactional
     public LikeResponse unlikeEvent(Long userId, Long eventId) {
-        User user = findUser(userId);
-        CulturalEvent event = findEvent(eventId);
+        User user = userService.getUserById(userId);
+        CulturalEvent event = eventService.getEventById(eventId);
 
         LikedEvent likedEvent = findLikedEvent(user, event);
         likedEventRepository.delete(likedEvent);
 
         return LikeResponse.of(eventId, false);
-    }
-
-    private User findUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
-    }
-
-    private CulturalEvent findEvent(Long eventId) {
-        return culturalEventRepository.findById(eventId)
-                .orElseThrow(EventNotFoundException::new);
     }
 
     private void checkNotAlreadyLiked(User user, CulturalEvent event) {
@@ -77,7 +65,7 @@ public class LikeService {
 
     @Transactional(readOnly = true)
     public LikedEventListResponse getLikedEvents(Long userId, LikedEventListRequest request) {
-        User user = findUser(userId);
+        User user = userService.getUserById(userId);
         Pageable pageable = request.toPageable();
 
         Page<LikedEvent> likedEventsPage = likedEventRepository.findByUser(user, pageable);
