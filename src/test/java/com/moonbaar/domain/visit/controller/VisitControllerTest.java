@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moonbaar.common.config.SecurityTestConfig;
 import com.moonbaar.domain.visit.dto.VisitRequest;
 import com.moonbaar.domain.visit.dto.VisitResponse;
-import com.moonbaar.domain.visit.exception.AlreadyVisitedException;
+import com.moonbaar.domain.visit.exception.RecentlyVisitedException;
 import com.moonbaar.domain.visit.exception.InvalidLocationException;
 import com.moonbaar.domain.visit.service.VisitService;
 import java.math.BigDecimal;
@@ -97,7 +97,7 @@ public class VisitControllerTest {
         );
 
         when(visitService.visitEvent(anyLong(), eq(EVENT_ID), any(VisitRequest.class)))
-                .thenThrow(new AlreadyVisitedException());
+                .thenThrow(new RecentlyVisitedException());
 
         // when & then
         mockMvc.perform(post("/events/{eventId}/visit", EVENT_ID)

@@ -7,7 +7,7 @@ import com.moonbaar.domain.user.service.UserService;
 import com.moonbaar.domain.visit.dto.VisitRequest;
 import com.moonbaar.domain.visit.dto.VisitResponse;
 import com.moonbaar.domain.visit.entity.Visit;
-import com.moonbaar.domain.visit.exception.AlreadyVisitedException;
+import com.moonbaar.domain.visit.exception.RecentlyVisitedException;
 import com.moonbaar.domain.visit.exception.InvalidLocationException;
 import com.moonbaar.domain.visit.repository.VisitRepository;
 import java.time.LocalDateTime;
@@ -63,7 +63,7 @@ public class VisitService {
         Optional<Visit> recentVisit = visitRepository.findTopByUserAndEventOrderByVisitedAtDesc(user, event);
 
         if (recentVisit.isPresent() && recentVisit.get().getVisitedAt().isAfter(cutoffTime)) {
-            throw new AlreadyVisitedException();
+            throw new RecentlyVisitedException();
         }
     }
 
