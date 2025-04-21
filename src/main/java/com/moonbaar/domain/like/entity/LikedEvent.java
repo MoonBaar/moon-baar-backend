@@ -5,6 +5,7 @@ import com.moonbaar.domain.event.entity.CulturalEvent;
 import com.moonbaar.domain.user.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -33,6 +34,10 @@ public class LikedEvent extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id", nullable = false)
+    @JoinColumn(name = "event_id", nullable = false,
+            foreignKey = @ForeignKey(
+                    name = "fk_liked_event_event_id",
+                    foreignKeyDefinition = "FOREIGN KEY (event_id) REFERENCES cultural_events(id) ON DELETE CASCADE"
+            ))
     private CulturalEvent event;
 }
