@@ -94,6 +94,7 @@ jobs:
             DB_PORT=${{ secrets.DB_PORT }}
             BACKEND_IMAGE=${{ secrets.BACKEND_IMAGE }}
             SEOUL_API_KEY=${{ secrets.SEOUL_API_KEY }}
+            BASE_URL=${{ secrets.BASE_URL }}
             EOL
 
             # 백엔드만 재배포
