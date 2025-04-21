@@ -27,6 +27,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
       SEOUL_API_KEY: ${SEOUL_API_KEY}
+      BASE_URL: ${BASE_URL}
     networks:
       - app-network
     restart: unless-stopped
