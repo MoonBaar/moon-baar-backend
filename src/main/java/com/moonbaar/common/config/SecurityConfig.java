@@ -2,6 +2,7 @@ package com.moonbaar.common.config;
 
 import com.moonbaar.common.filter.JwtAuthenticationFilter;
 import com.moonbaar.common.oauth.handler.OAuth2SuccessHandler;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +34,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/oauth2/**", "/events/**", "/categories/**", "/districts/**", "/users/**").permitAll()  // 공개 API 경로
+                        .requestMatchers("/login", "/oauth2/**", "/events/**", "/categories/**", "/districts/**", "/users/refresh").permitAll()  // 공개 API 경로
                         .anyRequest().authenticated()  // 나머지 경로는 인증 필요
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -41,6 +42,13 @@ public class SecurityConfig {
                 // OAuth2 로그인 설정
                 .formLogin(form -> form.disable())
                 .logout(logout -> logout.disable())
+
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                        })
+                )
+
                 .oauth2Login(oauth -> oauth
                         // 로그인 후 사용자 정보 가져올 때 사용할 서비스 지정
                         .userInfoEndpoint(userInfo -> userInfo .userService(customOAuth2UserService))
