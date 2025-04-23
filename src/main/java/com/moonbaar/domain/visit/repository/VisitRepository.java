@@ -4,6 +4,7 @@ import com.moonbaar.domain.event.entity.CulturalEvent;
 import com.moonbaar.domain.user.entity.User;
 import com.moonbaar.domain.visit.entity.Visit;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,4 +30,12 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
             @Param("maxLat") BigDecimal maxLat,
             @Param("minLng") BigDecimal minLng,
             @Param("maxLng") BigDecimal maxLng);
+
+    @Query("SELECT COUNT(v) FROM Visit v WHERE v.user.id = :userId")
+    long countByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT COUNT(v) FROM Visit v WHERE v.user.id = :userId AND v.visitedAt >= :startOfMonth")
+    long countByUserIdAndVisitedAtAfter(
+            @Param("userId") Long userId,
+            @Param("startOfMonth") LocalDateTime startOfMonth);
 }
