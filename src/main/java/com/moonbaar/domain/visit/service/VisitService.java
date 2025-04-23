@@ -1,14 +1,14 @@
 package com.moonbaar.domain.visit.service;
 
 import com.moonbaar.domain.event.entity.CulturalEvent;
-import com.moonbaar.domain.event.service.EventService;
+import com.moonbaar.domain.event.service.EventProvider;
 import com.moonbaar.domain.user.entity.User;
-import com.moonbaar.domain.user.service.UserService;
+import com.moonbaar.domain.user.service.UserProvider;
 import com.moonbaar.domain.visit.dto.VisitRequest;
 import com.moonbaar.domain.visit.dto.VisitResponse;
 import com.moonbaar.domain.visit.entity.Visit;
-import com.moonbaar.domain.visit.exception.RecentlyVisitedException;
 import com.moonbaar.domain.visit.exception.InvalidLocationException;
+import com.moonbaar.domain.visit.exception.RecentlyVisitedException;
 import com.moonbaar.domain.visit.repository.VisitRepository;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -27,14 +27,14 @@ public class VisitService {
     @Value("${moonbaar.visit.revisit-hours-interval}")
     private int REVISIT_HOURS_INTERVAL;
 
-    private final UserService userService;
-    private final EventService eventService;
+    private final UserProvider userProvider;
+    private final EventProvider eventProvider;
     private final VisitRepository visitRepository;
 
     @Transactional
     public VisitResponse visitEvent(Long userId, Long eventId, VisitRequest request) {
-        User user = userService.getUserById(userId);
-        CulturalEvent event = eventService.getEventById(eventId);
+        User user = userProvider.getUserById(userId);
+        CulturalEvent event = eventProvider.getEventById(eventId);
 
         validateVisitRequest(user, event, request);
         Visit visit = createVisit(user, event);

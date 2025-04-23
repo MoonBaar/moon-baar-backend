@@ -100,11 +100,6 @@ public class UserService {
         response.addCookie(cookie);
     }
 
-    public User getUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
-    }
-
     @Transactional
     public void deleteUser(HttpServletRequest request, HttpServletResponse response, Long userId) {
         // TODO 소셜 인증 철회
