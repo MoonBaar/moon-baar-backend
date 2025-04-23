@@ -104,4 +104,11 @@ public class UserService {
         return userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
     }
+
+    @Transactional
+    public void deleteUser(HttpServletRequest request, HttpServletResponse response, Long userId) {
+        // TODO 소셜 인증 철회
+        logout(request, response);
+        userRepository.deleteById(userId);
+    }
 }
