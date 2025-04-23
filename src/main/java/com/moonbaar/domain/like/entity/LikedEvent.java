@@ -30,7 +30,12 @@ import lombok.NoArgsConstructor;
 public class LikedEvent extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false,
+            foreignKey = @ForeignKey(
+                    name = "fk_liked_event_user_id",
+                    foreignKeyDefinition = "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+            )
+    )
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
