@@ -47,7 +47,6 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
             "ORDER BY COUNT(v) DESC")
     List<VisitCountByName> countVisitsByCategory(@Param("userId") Long userId);
 
-
     @Query("SELECT new com.moonbaar.domain.statistics.dto.VisitCountByName(d.name, COUNT(v)) " +
             "FROM Visit v JOIN v.event e JOIN e.district d " +
             "WHERE v.user.id = :userId " +
