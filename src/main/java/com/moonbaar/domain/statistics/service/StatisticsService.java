@@ -1,7 +1,7 @@
 package com.moonbaar.domain.statistics.service;
 
 import com.moonbaar.domain.statistics.dto.GroupStatistics;
-import com.moonbaar.domain.statistics.dto.StatisticsItem;
+import com.moonbaar.domain.statistics.dto.GroupStatistics.TopStatistic;
 import com.moonbaar.domain.statistics.dto.StatisticsResponse;
 import com.moonbaar.domain.statistics.dto.SummaryStatistics;
 import com.moonbaar.domain.statistics.dto.VisitCountByName;
@@ -47,15 +47,24 @@ public class StatisticsService {
     private GroupStatistics toGroupStatistics(List<VisitCountByName> counts, long total) {
         if (counts.isEmpty()) return GroupStatistics.of(null, List.of());
 
-        StatisticsItem top = toItem(counts.get(0), total);
-        List<StatisticsItem> items = counts.stream()
-                .map(c -> toItem(c, total))
-                .toList();
-        return GroupStatistics.of(top, items);
+        return GroupStatistics.of(
+                toTopStatistic(counts.get(0), total),
+                extractNames(counts)
+        );
     }
 
-    private StatisticsItem toItem(VisitCountByName v, long total) {
-        return StatisticsItem.of(v.name(), v.count(), percentage(v.count(), total));
+    private TopStatistic toTopStatistic(VisitCountByName topItem, long total) {
+        return TopStatistic.of(
+                topItem.name(),
+                topItem.count(),
+                percentage(topItem.count(), total)
+        );
+    }
+
+    private List<String> extractNames(List<VisitCountByName> items) {
+        return items.stream()
+                .map(VisitCountByName::name)
+                .toList();
     }
 
     private int percentage(long count, long total) {
