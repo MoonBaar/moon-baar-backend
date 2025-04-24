@@ -26,8 +26,7 @@ public class LikeService {
     private final LikedEventRepository likedEventRepository;
 
     @Transactional
-    public LikeResponse likeEvent(Long userId, Long eventId) {
-        User user = userProvider.getUserById(userId);
+    public LikeResponse likeEvent(User user, Long eventId) {
         CulturalEvent event = eventProvider.getEventById(eventId);
 
         checkNotAlreadyLiked(user, event);
@@ -42,8 +41,7 @@ public class LikeService {
     }
 
     @Transactional
-    public LikeResponse unlikeEvent(Long userId, Long eventId) {
-        User user = userProvider.getUserById(userId);
+    public LikeResponse unlikeEvent(User user, Long eventId) {
         CulturalEvent event = eventProvider.getEventById(eventId);
 
         LikedEvent likedEvent = findLikedEvent(user, event);
@@ -64,8 +62,7 @@ public class LikeService {
     }
 
     @Transactional(readOnly = true)
-    public LikedEventListResponse getLikedEvents(Long userId, LikedEventListRequest request) {
-        User user = userProvider.getUserById(userId);
+    public LikedEventListResponse getLikedEvents(User user, LikedEventListRequest request) {
         Pageable pageable = request.toPageable();
 
         Page<LikedEvent> likedEventsPage = likedEventRepository.findByUser(user, pageable);

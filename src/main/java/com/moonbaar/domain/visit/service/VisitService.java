@@ -32,8 +32,7 @@ public class VisitService {
     private final VisitRepository visitRepository;
 
     @Transactional
-    public VisitResponse visitEvent(Long userId, Long eventId, VisitRequest request) {
-        User user = userProvider.getUserById(userId);
+    public VisitResponse visitEvent(User user, Long eventId, VisitRequest request) {
         CulturalEvent event = eventProvider.getEventById(eventId);
 
         validateVisitRequest(user, event, request);
