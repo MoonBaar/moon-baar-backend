@@ -3,7 +3,6 @@ package com.moonbaar.domain.visit.service;
 import com.moonbaar.domain.event.entity.CulturalEvent;
 import com.moonbaar.domain.event.service.EventProvider;
 import com.moonbaar.domain.user.entity.User;
-import com.moonbaar.domain.user.service.UserProvider;
 import com.moonbaar.domain.visit.dto.VisitRequest;
 import com.moonbaar.domain.visit.dto.VisitResponse;
 import com.moonbaar.domain.visit.entity.Visit;
@@ -27,7 +26,6 @@ public class VisitService {
     @Value("${moonbaar.visit.revisit-hours-interval}")
     private int REVISIT_HOURS_INTERVAL;
 
-    private final UserProvider userProvider;
     private final EventProvider eventProvider;
     private final VisitRepository visitRepository;
 

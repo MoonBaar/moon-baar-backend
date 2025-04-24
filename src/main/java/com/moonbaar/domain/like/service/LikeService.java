@@ -10,7 +10,6 @@ import com.moonbaar.domain.like.exception.AlreadyLikedEventException;
 import com.moonbaar.domain.like.exception.LikeNotFoundException;
 import com.moonbaar.domain.like.repository.LikedEventRepository;
 import com.moonbaar.domain.user.entity.User;
-import com.moonbaar.domain.user.service.UserProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LikeService {
 
-    private final UserProvider userProvider;
     private final EventProvider eventProvider;
     private final LikedEventRepository likedEventRepository;
 

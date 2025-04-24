@@ -43,7 +43,6 @@ public class VisitControllerTest {
     @MockitoBean
     private VisitService visitService;
 
-    private final Long MOCK_USER_ID = 1L;
     private final Long EVENT_ID = 1L;
 
     @Test
