@@ -2,17 +2,18 @@ package com.moonbaar.domain.like.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.moonbaar.common.config.SecurityTestConfig;
+import com.moonbaar.common.security.WithMockCustomUser;
 import com.moonbaar.domain.like.dto.LikedEventListRequest;
 import com.moonbaar.domain.like.dto.LikedEventListResponse;
 import com.moonbaar.domain.like.dto.LikedEventResponse;
 import com.moonbaar.domain.like.service.LikeService;
+import com.moonbaar.domain.user.entity.User;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(UserLikeController.class)
 @Import(SecurityTestConfig.class)
 @AutoConfigureMockMvc(addFilters = false)
+@WithMockCustomUser
 public class UserLikeControllerTest {
 
     @Autowired
@@ -36,9 +38,6 @@ public class UserLikeControllerTest {
 
     @MockitoBean
     private LikeService likeService;
-
-    private final Long MOCK_USER_ID = 1L;
-    private final Long EVENT_ID = 1L;
 
     @Test
     @DisplayName("좋아요한 행사 목록 조회 성공")
@@ -58,7 +57,7 @@ public class UserLikeControllerTest {
 
         // 기본값으로 생성되는 request를 검증할 수 있도록 ArgumentCaptor 사용
         ArgumentCaptor<LikedEventListRequest> requestCaptor = ArgumentCaptor.forClass(LikedEventListRequest.class);
-        when(likeService.getLikedEvents(eq(MOCK_USER_ID), requestCaptor.capture()))
+        when(likeService.getLikedEvents(any(User.class), requestCaptor.capture()))
                 .thenReturn(response);
 
         // when & then
@@ -88,7 +87,7 @@ public class UserLikeControllerTest {
         // given
         LikedEventListResponse response = new LikedEventListResponse(10L, 2, 2, List.of());
 
-        when(likeService.getLikedEvents(eq(MOCK_USER_ID), any(LikedEventListRequest.class)))
+        when(likeService.getLikedEvents(any(User.class), any(LikedEventListRequest.class)))
                 .thenReturn(response);
 
         // when & then

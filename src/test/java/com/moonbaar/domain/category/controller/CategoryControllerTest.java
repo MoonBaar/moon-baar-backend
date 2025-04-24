@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.moonbaar.common.config.SecurityTestConfig;
 import com.moonbaar.common.exception.BusinessException;
+import com.moonbaar.common.security.WithMockCustomUser;
 import com.moonbaar.domain.category.dto.CategoryListResponse;
 import com.moonbaar.domain.category.dto.CategoryResponse;
 import com.moonbaar.domain.category.exception.CategoryErrorCode;
@@ -25,6 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(CategoryController.class)
 @Import(SecurityTestConfig.class)
 @AutoConfigureMockMvc(addFilters = false)
+@WithMockCustomUser
 public class CategoryControllerTest {
 
     @Autowired

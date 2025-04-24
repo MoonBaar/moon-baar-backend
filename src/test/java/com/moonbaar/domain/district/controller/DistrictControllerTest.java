@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.moonbaar.common.config.SecurityTestConfig;
 import com.moonbaar.common.exception.BusinessException;
+import com.moonbaar.common.security.WithMockCustomUser;
 import com.moonbaar.domain.district.dto.DistrictListResponse;
 import com.moonbaar.domain.district.dto.DistrictResponse;
 import com.moonbaar.domain.district.exception.DistrictErrorCode;
@@ -25,6 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(DistrictController.class)
 @Import(SecurityTestConfig.class)
 @AutoConfigureMockMvc(addFilters = false)
+@WithMockCustomUser
 public class DistrictControllerTest {
 
     @Autowired

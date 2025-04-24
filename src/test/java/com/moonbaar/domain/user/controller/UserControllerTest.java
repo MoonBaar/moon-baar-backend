@@ -1,6 +1,7 @@
 package com.moonbaar.domain.user.controller;
 
 import com.moonbaar.common.config.SecurityTestConfig;
+import com.moonbaar.common.security.WithMockCustomUser;
 import com.moonbaar.domain.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(UserController.class)
 @Import(SecurityTestConfig.class)
 @AutoConfigureMockMvc(addFilters = false)
+@WithMockCustomUser
 public class UserControllerTest {
 
     @Autowired
@@ -19,5 +21,4 @@ public class UserControllerTest {
 
     @MockitoBean
     private UserService userService;
-    private final Long MOCK_USER_ID = 1L;
 }

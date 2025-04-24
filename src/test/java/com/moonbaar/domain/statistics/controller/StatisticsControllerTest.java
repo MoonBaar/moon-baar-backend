@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.moonbaar.common.config.SecurityTestConfig;
+import com.moonbaar.common.security.WithMockCustomUser;
 import com.moonbaar.domain.statistics.dto.GroupStatistics;
 import com.moonbaar.domain.statistics.dto.GroupStatistics.TopStatistic;
 import com.moonbaar.domain.statistics.dto.StatisticsResponse;
@@ -25,6 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(StatisticsController.class)
 @Import(SecurityTestConfig.class)
 @AutoConfigureMockMvc(addFilters = false)
+@WithMockCustomUser
 public class StatisticsControllerTest {
 
     @Autowired

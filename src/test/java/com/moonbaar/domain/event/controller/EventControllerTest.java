@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moonbaar.common.config.SecurityTestConfig;
 import com.moonbaar.common.exception.BusinessException;
+import com.moonbaar.common.security.WithMockCustomUser;
 import com.moonbaar.domain.event.dto.EventDetailResponse;
 import com.moonbaar.domain.event.exeption.EventErrorCode;
 import com.moonbaar.domain.event.service.EventService;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(EventController.class)
 @Import(SecurityTestConfig.class)
 @AutoConfigureMockMvc(addFilters = false)
+@WithMockCustomUser
 class EventControllerTest {
 
     @Autowired

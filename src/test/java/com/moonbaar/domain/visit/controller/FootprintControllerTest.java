@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moonbaar.common.config.SecurityTestConfig;
+import com.moonbaar.common.security.WithMockCustomUser;
 import com.moonbaar.domain.visit.dto.FootprintListResponse;
 import com.moonbaar.domain.visit.dto.FootprintRequest;
 import com.moonbaar.domain.visit.dto.FootprintResponse;
@@ -29,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(FootprintController.class)
 @Import(SecurityTestConfig.class)
 @AutoConfigureMockMvc(addFilters = false)
+@WithMockCustomUser
 public class FootprintControllerTest {
 
     @Autowired
@@ -41,7 +43,6 @@ public class FootprintControllerTest {
     private FootprintService footprintService;
 
     private final Long MOCK_USER_ID = 1L;
-    private final Long EVENT_ID = 1L;
 
     @Test
     @DisplayName("지도 범위 내 방문 위치 조회 성공")
