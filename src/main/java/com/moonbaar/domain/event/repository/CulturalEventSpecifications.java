@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
 
-public class EventSpecifications {
+public class CulturalEventSpecifications {
 
     public static Specification<CulturalEvent> withSearchCriteria(
             String query,

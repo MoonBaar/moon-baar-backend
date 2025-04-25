@@ -10,7 +10,7 @@ import com.moonbaar.domain.district.entity.District;
 import com.moonbaar.domain.event.dto.EventDetailResponse;
 import com.moonbaar.domain.event.entity.CulturalEvent;
 import com.moonbaar.domain.event.exeption.EventErrorCode;
-import com.moonbaar.domain.event.repository.EventRepository;
+import com.moonbaar.domain.event.repository.CulturalEventRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -27,7 +27,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 class EventServiceTest {
 
     @Mock
-    private EventRepository eventRepository;
+    private CulturalEventRepository eventRepository;
 
     @InjectMocks
     private EventService eventService;

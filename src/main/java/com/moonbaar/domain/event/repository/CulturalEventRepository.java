@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface EventRepository extends JpaRepository<CulturalEvent, Long>,
+public interface CulturalEventRepository extends JpaRepository<CulturalEvent, Long>,
         JpaSpecificationExecutor<CulturalEvent> {
 }

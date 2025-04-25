@@ -18,10 +18,10 @@ import org.springframework.data.jpa.domain.Specification;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // 실제 DB 사용
-public class EventRepositoryTest {
+public class CulturalEventRepositoryTest {
 
     @Autowired
-    private EventRepository eventRepository;
+    private CulturalEventRepository eventRepository;
 
     @Test
     public void testFindAll() {

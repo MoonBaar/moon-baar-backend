@@ -2,7 +2,7 @@ package com.moonbaar.domain.event.service;
 
 import com.moonbaar.domain.event.entity.CulturalEvent;
 import com.moonbaar.domain.event.exeption.EventNotFoundException;
-import com.moonbaar.domain.event.repository.EventRepository;
+import com.moonbaar.domain.event.repository.CulturalEventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class EventProvider {
 
-    private final EventRepository eventRepository;
+    private final CulturalEventRepository eventRepository;
 
     public CulturalEvent getEventById(Long eventId) {
         return eventRepository.findById(eventId)
