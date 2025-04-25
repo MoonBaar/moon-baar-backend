@@ -6,7 +6,6 @@ import com.moonbaar.common.oauth.dto.OAuthAttributes;
 import com.moonbaar.common.utils.JwtUtils;
 import com.moonbaar.domain.user.entity.User;
 import com.moonbaar.domain.user.exception.UserAccessDeniedException;
-import com.moonbaar.domain.user.exception.UserNotFoundException;
 import com.moonbaar.domain.user.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +20,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final UserProvider userProvider;
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
     private final TokenBlackList tokenBlackList;
@@ -52,7 +52,7 @@ public class UserService {
 
         // DB에 저장된 refreshToken과 비교
         Long userId = jwtUtils.getUserId(refreshToken);
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        User user = userProvider.getUserById(userId);
         if (!refreshToken.equals(user.getRefreshToken())) {
             throw new UserAccessDeniedException();
         }
@@ -98,11 +98,6 @@ public class UserService {
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         response.addCookie(cookie);
-    }
-
-    public User getUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional

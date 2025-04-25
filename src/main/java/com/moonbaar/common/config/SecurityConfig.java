@@ -34,6 +34,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/events/*/like", "/events/*/visit").authenticated()
                         .requestMatchers("/login", "/oauth2/**", "/events/**", "/categories/**", "/districts/**", "/users/refresh").permitAll()  // 공개 API 경로
                         .anyRequest().authenticated()  // 나머지 경로는 인증 필요
                 )

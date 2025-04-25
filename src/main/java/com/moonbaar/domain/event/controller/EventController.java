@@ -18,10 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Validated
 public class EventController {
-
-    // 임시 유저 아이디
-    private Long MOCK_USER_ID = 1L;
-
     private final EventService eventService;
 
     @GetMapping

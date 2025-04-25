@@ -1,7 +1,6 @@
 package com.moonbaar.domain.visit.controller;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -10,10 +9,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moonbaar.common.config.SecurityTestConfig;
+import com.moonbaar.common.security.WithMockCustomUser;
+import com.moonbaar.domain.user.entity.User;
 import com.moonbaar.domain.visit.dto.VisitRequest;
 import com.moonbaar.domain.visit.dto.VisitResponse;
-import com.moonbaar.domain.visit.exception.RecentlyVisitedException;
 import com.moonbaar.domain.visit.exception.InvalidLocationException;
+import com.moonbaar.domain.visit.exception.RecentlyVisitedException;
 import com.moonbaar.domain.visit.service.VisitService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -30,6 +31,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(VisitController.class)
 @Import(SecurityTestConfig.class)
 @AutoConfigureMockMvc(addFilters = false)
+@WithMockCustomUser
 public class VisitControllerTest {
 
     @Autowired
@@ -41,7 +43,6 @@ public class VisitControllerTest {
     @MockitoBean
     private VisitService visitService;
 
-    private final Long MOCK_USER_ID = 1L;
     private final Long EVENT_ID = 1L;
 
     @Test
@@ -60,7 +61,7 @@ public class VisitControllerTest {
                 LocalDateTime.now()
         );
 
-        when(visitService.visitEvent(anyLong(), eq(EVENT_ID), any(VisitRequest.class)))
+        when(visitService.visitEvent(any(User.class), eq(EVENT_ID), any(VisitRequest.class)))
                 .thenReturn(response);
 
         // when & then
@@ -96,7 +97,7 @@ public class VisitControllerTest {
                 new BigDecimal("126.9760")
         );
 
-        when(visitService.visitEvent(anyLong(), eq(EVENT_ID), any(VisitRequest.class)))
+        when(visitService.visitEvent(any(User.class), eq(EVENT_ID), any(VisitRequest.class)))
                 .thenThrow(new RecentlyVisitedException());
 
         // when & then
@@ -115,7 +116,7 @@ public class VisitControllerTest {
                 new BigDecimal("126.9760")
         );
 
-        when(visitService.visitEvent(anyLong(), eq(EVENT_ID), any(VisitRequest.class)))
+        when(visitService.visitEvent(any(User.class), eq(EVENT_ID), any(VisitRequest.class)))
                 .thenThrow(new InvalidLocationException());
 
         // when & then

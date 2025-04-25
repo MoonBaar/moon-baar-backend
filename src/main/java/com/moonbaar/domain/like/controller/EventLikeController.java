@@ -1,9 +1,11 @@
 package com.moonbaar.domain.like.controller;
 
+import com.moonbaar.common.oauth.CustomUserDetails;
 import com.moonbaar.domain.like.dto.LikeResponse;
 import com.moonbaar.domain.like.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,22 +19,23 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class EventLikeController {
 
-    // 임시 유저 아이디
-    private Long MOCK_USER_ID = 1L;
-
     private final LikeService likeService;
 
     @PostMapping("/{eventId}/like")
-    public ResponseEntity<LikeResponse> likeEvent(@PathVariable Long eventId) {
+    public ResponseEntity<LikeResponse> likeEvent(
+            @PathVariable Long eventId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        LikeResponse response = likeService.likeEvent(MOCK_USER_ID, eventId);
+        LikeResponse response = likeService.likeEvent(userDetails.getUser(), eventId);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{eventId}/like")
-    public ResponseEntity<LikeResponse> unlikeEvent(@PathVariable Long eventId) {
+    public ResponseEntity<LikeResponse> unlikeEvent(
+            @PathVariable Long eventId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        LikeResponse response = likeService.unlikeEvent(MOCK_USER_ID, eventId);
+        LikeResponse response = likeService.unlikeEvent(userDetails.getUser(), eventId);
         return ResponseEntity.ok(response);
     }
 }
