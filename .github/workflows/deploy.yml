@@ -95,6 +95,8 @@ jobs:
             BACKEND_IMAGE=${{ secrets.BACKEND_IMAGE }}
             SEOUL_API_KEY=${{ secrets.SEOUL_API_KEY }}
             BASE_URL=${{ secrets.BASE_URL }}
+            SSL_CERT_PATH=${{ secrets.SSL_CERT_PATH }}
+            SSL_CERT_KEY=${{ secrets.SSL_CERT_KEY }}
             EOL
 
             # 백엔드만 재배포
