@@ -65,7 +65,7 @@ public class UserService {
         accessCookie.setSecure(true);
         accessCookie.setPath("/");
         accessCookie.setMaxAge((int) (accessTokenExpirationMs / 1000));
-        accessCookie.setAttribute("SameSite", "Lax");
+        accessCookie.setAttribute("SameSite", "None");
 
         response.addCookie(accessCookie);
     }
