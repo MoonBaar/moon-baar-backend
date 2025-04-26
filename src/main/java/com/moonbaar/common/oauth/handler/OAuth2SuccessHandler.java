@@ -56,14 +56,14 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         accessCookie.setSecure(true);
         accessCookie.setPath("/");
         accessCookie.setMaxAge((int) (accessTokenExpirationMs / 1000));
-        accessCookie.setAttribute("SameSite", "Lax");
+        accessCookie.setAttribute("SameSite", "None");
 
         Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
         refreshCookie.setHttpOnly(true);
         refreshCookie.setSecure(true);
         refreshCookie.setPath("/");
         refreshCookie.setMaxAge((int) (refreshTokenExpirationMs / 1000));
-        refreshCookie.setAttribute("SameSite", "Lax");
+        refreshCookie.setAttribute("SameSite", "None");
 
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);
