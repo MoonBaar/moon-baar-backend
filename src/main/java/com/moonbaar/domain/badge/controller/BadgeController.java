@@ -1,9 +1,11 @@
 package com.moonbaar.domain.badge.controller;
 
 import com.moonbaar.common.oauth.CustomUserDetails;
+import com.moonbaar.domain.badge.dto.BadgeProgressResponse;
 import com.moonbaar.domain.badge.dto.UserBadgeListResponse;
 import com.moonbaar.domain.badge.service.BadgeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +33,13 @@ public class BadgeController {
     @PostMapping("/new")
     public UserBadgeListResponse checkAndGrantBadges(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return badgeService.checkAndGrantUserBadges(userDetails.getUser());
+    }
+
+    @GetMapping("/next")
+    public ResponseEntity<BadgeProgressResponse> findNextBadge(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return badgeService.findNextTargetBadge(userDetails.getUser())
+                .map(ResponseEntity::ok)
+                .orElseGet(()-> ResponseEntity.noContent().build());
     }
 
 }

@@ -87,4 +87,49 @@ public class BadgeService {
         return new BadgeEvaluationContext(totalVisitCount, visitedDistrictCount, visitCountByCategory);
     }
 
+    /**
+     * 진행률이 가장 높은 배지를 조회한다.
+     * @param user 로그인된 사용자
+     * @return 진행률이 가장 높은 배지 정보 및 진행 정보
+     */
+    public Optional<BadgeProgressResponse> findNextTargetBadge(User user) {
+        BadgeEvaluationContext badgeEvaluationContext = createBadgeEvaluationContext(user.getId());
+        Set<String> ownedBadgeCodes = userBadgeRepository.findCodeByUser(user.getId());
+
+        BadgeProgressResponse badgeProgressResponse = null;
+        double maximumProgressRate = 0.0;
+
+        for (BadgeCode badgeCode : BadgeCode.values()) {
+            if (ownedBadgeCodes.contains(badgeCode.name())) {
+                continue; // 이미 소유한 배지는 건너뜀
+            }
+
+            long progress = badgeCode.getProgress(badgeEvaluationContext);
+            long target = badgeCode.getTarget();
+            if (target <= 0) {
+                continue;
+            }
+            double progressRate = ((double) progress / target) * 100.0;
+            if (progressRate >= 100.0) {
+                continue;
+            }
+
+            if (progressRate > maximumProgressRate) {
+                maximumProgressRate = progressRate;
+
+                Badge badge = badgeRepository.getByCode(badgeCode).orElseThrow(BadgeNotFoundException::new);
+
+                badgeProgressResponse = new BadgeProgressResponse(
+                        badge.getId(),
+                        badge.getCode().name(),
+                        badge.getName(),
+                        badge.getDescription(),
+                        progress,
+                        target
+                );
+            }
+        }
+        return Optional.ofNullable(badgeProgressResponse);
+    }
+
 }
