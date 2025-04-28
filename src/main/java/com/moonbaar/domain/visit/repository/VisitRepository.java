@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,6 +19,11 @@ import org.springframework.stereotype.Repository;
 public interface VisitRepository extends JpaRepository<Visit, Long> {
 
     Optional<Visit> findTopByUserAndEventOrderByVisitedAtDesc(User user, CulturalEvent event);
+
+    @Query("SELECT v FROM Visit v JOIN FETCH v.event WHERE v.user = :user AND v.visitedAt >= :startDateTime")
+    Page<Visit> findByUserAndVisitedAtAfter(@Param("user") User user,
+                                            @Param("startDateTime") LocalDateTime startDateTime,
+                                            Pageable pageable);
 
     boolean existsByUserAndEvent(User user, CulturalEvent event);
 
