@@ -6,7 +6,6 @@ import com.moonbaar.domain.badge.dto.BadgeProgressResponse;
 import com.moonbaar.domain.badge.dto.UserBadgeListResponse;
 import com.moonbaar.domain.badge.service.BadgeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,11 +36,15 @@ public class BadgeController {
         return badgeService.checkAndGrantUserBadges(userDetails.getUser());
     }
 
+    /**
+     * 진행률이 가장 높은 배지를 조회한다.
+     * @param userDetails 로그인된 사용자
+     * @return 진행률이 가장 높은 배지 정보 및 진행 정보. 없으면 null
+     */
     @GetMapping("/next")
-    public ResponseEntity<BadgeProgressResponse> findNextBadge(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public BadgeProgressResponse findNextBadge(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return badgeService.findNextTargetBadge(userDetails.getUser())
-                .map(ResponseEntity::ok)
-                .orElseGet(()-> ResponseEntity.noContent().build());
+                .orElse(null);
     }
 
 }
