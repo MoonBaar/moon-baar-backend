@@ -25,9 +25,22 @@ public class BadgeService {
     private final BadgeRepository badgeRepository;
     private final VisitRepository visitRepository;
 
-    public UserBadgeListResponse findUserBadges(User user) {
-        List<UserBadge> userBadges = userBadgeRepository.findByUser(user.getId());
-        return UserBadgeListResponse.from(userBadges);
+    /**
+     * 전체 배지 목록과 사용자의 소유 여부를 조회한다.
+     * @param user 로그인된 사용자
+     * @return 전체 배지 정보 및 소유 여부
+     */
+    public BadgeListResponse findUserBadges(User user) {
+        List<Badge> badges = badgeRepository.findAllByOrderByIdAsc();
+        Set<String> ownedBadgeCodes = userBadgeRepository.findCodeByUser(user.getId());
+        List<BadgeResponse> badgeResponses = badges.stream()
+                .map(badge -> BadgeResponse.from(
+                        badge,
+                        ownedBadgeCodes.contains(badge.getCode().name())
+                ))
+                .toList();
+
+        return new BadgeListResponse(badgeResponses);
     }
 
     /**

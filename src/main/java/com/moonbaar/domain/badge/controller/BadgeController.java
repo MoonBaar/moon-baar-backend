@@ -1,6 +1,7 @@
 package com.moonbaar.domain.badge.controller;
 
 import com.moonbaar.common.oauth.CustomUserDetails;
+import com.moonbaar.domain.badge.dto.BadgeListResponse;
 import com.moonbaar.domain.badge.dto.BadgeProgressResponse;
 import com.moonbaar.domain.badge.dto.UserBadgeListResponse;
 import com.moonbaar.domain.badge.service.BadgeService;
@@ -17,11 +18,12 @@ public class BadgeController {
     private final BadgeService badgeService;
 
     /**
+     * 전체 배지 목록과 사용자의 소유 여부를 조회한다.
      * @param userDetails 로그인된 사용자
      * @return 사용자가 보유한 배지 목록
      */
     @GetMapping
-    public UserBadgeListResponse findBadges(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public BadgeListResponse findBadges(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return badgeService.findUserBadges(userDetails.getUser());
     }
 
