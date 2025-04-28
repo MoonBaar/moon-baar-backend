@@ -1,11 +1,13 @@
 package com.moonbaar.domain.event.controller;
 
+import com.moonbaar.common.oauth.CustomUserDetails;
 import com.moonbaar.domain.event.dto.EventDetailResponse;
 import com.moonbaar.domain.event.dto.EventListResponse;
 import com.moonbaar.domain.event.dto.EventSearchRequest;
 import com.moonbaar.domain.event.service.EventService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -26,7 +28,13 @@ public class EventController {
     }
 
     @GetMapping("/{eventId}")
-    public EventDetailResponse getEventDetail(@PathVariable Long eventId) {
-        return eventService.getEventDetail(eventId);
+    public EventDetailResponse getEventDetail(
+            @PathVariable Long eventId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        if (userDetails == null) {
+            return eventService.getEventDetail(eventId);
+        }
+        return eventService.getEventDetailForUser(userDetails.getUser(), eventId);
     }
 }

@@ -18,6 +18,8 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
 
     Optional<Visit> findTopByUserAndEventOrderByVisitedAtDesc(User user, CulturalEvent event);
 
+    boolean existsByUserAndEvent(User user, CulturalEvent event);
+
     @Query("SELECT v FROM Visit v " +
             "JOIN FETCH v.event e " +
             "WHERE v.user.id = :userId " +

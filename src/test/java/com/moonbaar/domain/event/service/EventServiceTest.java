@@ -10,10 +10,10 @@ import com.moonbaar.domain.district.entity.District;
 import com.moonbaar.domain.event.dto.EventDetailResponse;
 import com.moonbaar.domain.event.entity.CulturalEvent;
 import com.moonbaar.domain.event.exeption.EventErrorCode;
+import com.moonbaar.domain.event.exeption.EventNotFoundException;
 import com.moonbaar.domain.event.repository.CulturalEventRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,6 +28,9 @@ class EventServiceTest {
 
     @Mock
     private CulturalEventRepository eventRepository;
+
+    @Mock
+    private EventProvider eventProvider;
 
     @InjectMocks
     private EventService eventService;
@@ -72,10 +75,10 @@ class EventServiceTest {
     @DisplayName("행사 ID로 상세 정보를 조회할 수 있다")
     void getEventDetail_ShouldReturnEventDetail() {
         // given
-        when(eventRepository.findById(1L)).thenReturn(Optional.of(sampleEvent));
+        when(eventProvider.getEventById(1L)).thenReturn(sampleEvent);
 
         // when
-        EventDetailResponse response = eventService.getEventDetail(1L);
+        EventDetailResponse response = eventService.getEventDetail( 1L);
 
         // then
         assertThat(response).isNotNull();
@@ -93,7 +96,7 @@ class EventServiceTest {
     void getEventDetail_WithNonExistingId_ShouldThrowException() {
         // given
         Long nonExistingId = 999L;
-        when(eventRepository.findById(nonExistingId)).thenReturn(Optional.empty());
+        when(eventProvider.getEventById(nonExistingId)).thenThrow(new EventNotFoundException());
 
         // when & then
         assertThatThrownBy(() -> eventService.getEventDetail(nonExistingId))
