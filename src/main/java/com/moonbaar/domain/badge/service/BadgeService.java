@@ -10,9 +10,9 @@ import com.moonbaar.domain.badge.repository.UserBadgeRepository;
 import com.moonbaar.domain.statistics.dto.VisitCountByName;
 import com.moonbaar.domain.user.entity.User;
 import com.moonbaar.domain.visit.repository.VisitRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,9 +30,10 @@ public class BadgeService {
      * @param user 로그인된 사용자
      * @return 전체 배지 정보 및 소유 여부
      */
+    @Transactional(readOnly = true)
     public BadgeListResponse findUserBadges(User user) {
         List<Badge> badges = badgeRepository.findAllByOrderByIdAsc();
-        Set<String> ownedBadgeCodes = userBadgeRepository.findCodeByUser(user.getId());
+        Set<String> ownedBadgeCodes = userBadgeRepository.findCodeByUserId(user.getId());
         List<BadgeResponse> badgeResponses = badges.stream()
                 .map(badge -> BadgeResponse.from(
                         badge,
@@ -54,7 +55,7 @@ public class BadgeService {
         BadgeEvaluationContext badgeEvaluationContext = createBadgeEvaluationContext(user.getId());
 
         // 기존에 소유한 배지 코드 목록
-        Set<String> ownedBadgeCodes = userBadgeRepository.findCodeByUser(user.getId());
+        Set<String> ownedBadgeCodes = userBadgeRepository.findCodeByUserId(user.getId());
 
         // 새롭게 얻은 배지 목록
         List<UserBadgeResponse> newlyGrantedBadges = new ArrayList<>();
@@ -105,9 +106,10 @@ public class BadgeService {
      * @param user 로그인된 사용자
      * @return 진행률이 가장 높은 배지 정보 및 진행 정보
      */
+    @Transactional(readOnly = true)
     public Optional<BadgeProgressResponse> findNextTargetBadge(User user) {
         BadgeEvaluationContext badgeEvaluationContext = createBadgeEvaluationContext(user.getId());
-        Set<String> ownedBadgeCodes = userBadgeRepository.findCodeByUser(user.getId());
+        Set<String> ownedBadgeCodes = userBadgeRepository.findCodeByUserId(user.getId());
 
         BadgeProgressResponse badgeProgressResponse = null;
         double maximumProgressRate = 0.0;
