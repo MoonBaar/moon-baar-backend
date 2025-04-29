@@ -35,7 +35,7 @@ public class BadgeService {
         List<Badge> badges = badgeRepository.findAllByOrderByIdAsc();
         Set<String> ownedBadgeCodes = userBadgeRepository.findCodeByUserId(user.getId());
         List<BadgeResponse> badgeResponses = badges.stream()
-                .map(badge -> BadgeResponse.from(
+                .map(badge -> BadgeResponse.of(
                         badge,
                         ownedBadgeCodes.contains(badge.getCode().name())
                 ))
@@ -131,17 +131,8 @@ public class BadgeService {
 
             if (progressRate > maximumProgressRate) {
                 maximumProgressRate = progressRate;
-
                 Badge badge = badgeRepository.getByCode(badgeCode).orElseThrow(BadgeNotFoundException::new);
-
-                badgeProgressResponse = new BadgeProgressResponse(
-                        badge.getId(),
-                        badge.getCode().name(),
-                        badge.getName(),
-                        badge.getDescription(),
-                        progress,
-                        target
-                );
+                badgeProgressResponse = BadgeProgressResponse.of(badge, progress, target);
             }
         }
         return Optional.ofNullable(badgeProgressResponse);

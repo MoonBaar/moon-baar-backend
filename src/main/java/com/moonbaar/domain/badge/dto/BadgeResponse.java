@@ -11,7 +11,7 @@ public record BadgeResponse(
         String imageUrl,
         boolean owned
 ) {
-    public static BadgeResponse from(Badge badge, boolean owned) {
+    public static BadgeResponse of(Badge badge, boolean owned) {
         return new BadgeResponse(
                 badge.getId(),
                 badge.getBadgeType().name(),
