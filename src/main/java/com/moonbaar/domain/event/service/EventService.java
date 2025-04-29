@@ -7,6 +7,9 @@ import com.moonbaar.domain.event.dto.EventSummaryResponse;
 import com.moonbaar.domain.event.entity.CulturalEvent;
 import com.moonbaar.domain.event.repository.CulturalEventRepository;
 import com.moonbaar.domain.event.repository.CulturalEventSpecifications;
+import com.moonbaar.domain.like.repository.LikedEventRepository;
+import com.moonbaar.domain.user.entity.User;
+import com.moonbaar.domain.visit.repository.VisitRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +25,8 @@ public class EventService {
 
     private final CulturalEventRepository eventRepository;
     private final EventProvider eventProvider;
+    private final LikedEventRepository likedEventRepository;
+    private final VisitRepository visitRepository;
 
     public EventListResponse searchEvents(EventSearchRequest request) {
         Specification<CulturalEvent> spec = createSearchSpecification(request);
@@ -55,6 +60,28 @@ public class EventService {
 
     public EventDetailResponse getEventDetail(Long eventId) {
         CulturalEvent event = eventProvider.getEventById(eventId);
-        return EventDetailResponse.from(event);
+        return EventDetailResponse.of(event, false, false);
+    }
+
+    public EventDetailResponse getEventDetailForUser(User user, Long eventId) {
+        CulturalEvent event = eventProvider.getEventById(eventId);
+
+        boolean isLiked = checkIfEventIsLiked(user, event);
+        boolean isVisited = checkIfEventIsVisited(user, event);
+        return EventDetailResponse.of(event, isLiked, isVisited);
+    }
+
+    private boolean checkIfEventIsLiked(User user, CulturalEvent event) {
+        if (user == null) {
+            return false;
+        }
+        return likedEventRepository.existsByUserAndEvent(user, event);
+    }
+
+    private boolean checkIfEventIsVisited(User user, CulturalEvent event) {
+        if (user == null) {
+            return false;
+        }
+        return visitRepository.existsByUserAndEvent(user, event);
     }
 }
