@@ -26,6 +26,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
 
+    @Value("${frontend.redirect-url}")
+    private String redirectUrl;
+
     @Value("${jwt.access-token-expiration}")
     private long accessTokenExpirationMs;
 
@@ -67,10 +70,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);
 
-        // Origin이 허용된 경우에만 리디렉트
-        String origin = request.getHeader("Origin");
-        if (origin != null && corsProperties.getAllowedOrigins().contains(origin)) {
-            response.sendRedirect(origin + "/login-success");
-        }
+        response.sendRedirect(redirectUrl);
     }
 }
