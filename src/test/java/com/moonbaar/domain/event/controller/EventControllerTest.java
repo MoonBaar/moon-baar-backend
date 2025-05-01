@@ -7,12 +7,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moonbaar.common.config.SecurityTestConfig;
-import com.moonbaar.common.exception.BusinessException;
 import com.moonbaar.common.security.WithMockCustomUser;
 import com.moonbaar.domain.event.dto.EventDetailResponse;
 import com.moonbaar.domain.event.exeption.EventErrorCode;
+import com.moonbaar.domain.event.exeption.EventNotFoundException;
 import com.moonbaar.domain.event.service.EventService;
 import com.moonbaar.domain.user.entity.User;
 import java.math.BigDecimal;
@@ -24,21 +23,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(EventController.class)
 @Import(SecurityTestConfig.class)
 @AutoConfigureMockMvc(addFilters = false)
-@WithMockCustomUser
 class EventControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @MockitoBean
     private EventService eventService;
@@ -46,7 +40,7 @@ class EventControllerTest {
     private final Long MOCK_USER_ID = 1L;
     private final Long EVENT_ID = 1L;
 
-    private EventDetailResponse createMockResponse(boolean isLiked, boolean isVisited) {
+    private EventDetailResponse createMockResponse(boolean isVisited, boolean isLiked, long visitCount, long likeCount) {
         LocalDateTime startDate = LocalDateTime.now().plusDays(1);
         LocalDateTime endDate = LocalDateTime.now().plusDays(3);
 
@@ -70,17 +64,18 @@ class EventControllerTest {
                 "https://www.seoulevent.or.kr",
                 new BigDecimal("37.5725"),
                 new BigDecimal("126.9760"),
+                isVisited,
                 isLiked,
-                isVisited
+                visitCount,
+                likeCount
         );
     }
 
     @Test
     @DisplayName("비로그인 사용자도 행사 상세 정보를 조회할 수 있다")
-    @WithAnonymousUser
     void getEventDetail_NonAuthenticatedUser() throws Exception {
         // given
-        when(eventService.getEventDetail(EVENT_ID)).thenReturn(createMockResponse(false, false));
+        when(eventService.getEventDetail(EVENT_ID)).thenReturn(createMockResponse(false, false, 1, 100));
 
         // when & then
         mockMvc.perform(get("/events/{eventId}", EVENT_ID)
@@ -88,25 +83,29 @@ class EventControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(EVENT_ID.intValue()))
                 .andExpect(jsonPath("$.title").value("서울시극단 [코믹]"))
+                .andExpect(jsonPath("$.isVisited").value(false))
                 .andExpect(jsonPath("$.isLiked").value(false))
-                .andExpect(jsonPath("$.isVisited").value(false));
+                .andExpect(jsonPath("$.visitCount").value(1))
+                .andExpect(jsonPath("$.likeCount").value(100));
     }
 
     @Test
     @DisplayName("로그인한 사용자는 좋아요/방문 상태가 포함된 행사 상세 정보를 조회할 수 있다")
-    @WithMockCustomUser(id = 1L, nickname = "testUser")
+    @WithMockCustomUser
     void getEventDetail_AuthenticatedUser() throws Exception {
         // given
         when(eventService.getEventDetailForUser(any(User.class), eq(EVENT_ID)))
-                .thenReturn(createMockResponse(true, false));
+                .thenReturn(createMockResponse(true, false, 1, 100));
 
         // when & then
         mockMvc.perform(get("/events/{eventId}", EVENT_ID))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(EVENT_ID.intValue()))
                 .andExpect(jsonPath("$.title").value("서울시극단 [코믹]"))
-                .andExpect(jsonPath("$.isLiked").value(true))
-                .andExpect(jsonPath("$.isVisited").value(false));
+                .andExpect(jsonPath("$.isVisited").value(true))
+                .andExpect(jsonPath("$.isLiked").value(false))
+                .andExpect(jsonPath("$.visitCount").value(1))
+                .andExpect(jsonPath("$.likeCount").value(100));
     }
 
     @Test
@@ -114,8 +113,7 @@ class EventControllerTest {
     void getEventDetail_WithNonExistingId_ReturnsNotFound() throws Exception {
         // given
         Long nonExistingId = 999L;
-        when(eventService.getEventDetail(nonExistingId))
-                .thenThrow(new BusinessException(EventErrorCode.EVENT_NOT_FOUND));
+        when(eventService.getEventDetail(nonExistingId)).thenThrow(new EventNotFoundException());
 
         // when & then
         mockMvc.perform(get("/events/{eventId}", nonExistingId)

@@ -12,6 +12,8 @@ import com.moonbaar.domain.event.entity.CulturalEvent;
 import com.moonbaar.domain.event.exeption.EventErrorCode;
 import com.moonbaar.domain.event.exeption.EventNotFoundException;
 import com.moonbaar.domain.event.repository.CulturalEventRepository;
+import com.moonbaar.domain.like.repository.LikedEventRepository;
+import com.moonbaar.domain.visit.repository.VisitRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +30,12 @@ class EventServiceTest {
 
     @Mock
     private CulturalEventRepository eventRepository;
+
+    @Mock
+    private VisitRepository visitRepository;
+
+    @Mock
+    private LikedEventRepository likedEventRepository;
 
     @Mock
     private EventProvider eventProvider;
