@@ -1,5 +1,6 @@
 package com.moonbaar.common.oauth.handler;
 
+import com.moonbaar.common.config.CorsProperties;
 import com.moonbaar.common.oauth.CustomOAuth2User;
 import com.moonbaar.common.utils.JwtUtils;
 import com.moonbaar.domain.user.entity.User;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
+    private final CorsProperties corsProperties;
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
 
@@ -68,6 +70,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);
 
-        response.sendRedirect(redirectUrl + "/login-success");
+        response.sendRedirect(redirectUrl);
     }
 }
