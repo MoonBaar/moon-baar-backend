@@ -41,6 +41,9 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
             @Param("minLng") BigDecimal minLng,
             @Param("maxLng") BigDecimal maxLng);
 
+    @Query("SELECT COUNT(v) FROM Visit v WHERE v.event.id = :eventId")
+    long countByEventId(@Param("eventId") Long eventId);
+
     @Query("SELECT COUNT(v) FROM Visit v WHERE v.user.id = :userId")
     long countByUserId(@Param("userId") Long userId);
 

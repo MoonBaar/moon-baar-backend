@@ -60,15 +60,20 @@ public class EventService {
 
     public EventDetailResponse getEventDetail(Long eventId) {
         CulturalEvent event = eventProvider.getEventById(eventId);
-        return EventDetailResponse.of(event, false, false);
+        long visitCount = visitRepository.countByEventId(eventId);
+        long likeCount = likedEventRepository.countByEventId(eventId);
+
+        return EventDetailResponse.of(event, false, false, visitCount, likeCount);
     }
 
     public EventDetailResponse getEventDetailForUser(User user, Long eventId) {
         CulturalEvent event = eventProvider.getEventById(eventId);
+        long visitCount = visitRepository.countByEventId(eventId);
+        long likeCount = likedEventRepository.countByEventId(eventId);
 
-        boolean isLiked = checkIfEventIsLiked(user, event);
         boolean isVisited = checkIfEventIsVisited(user, event);
-        return EventDetailResponse.of(event, isLiked, isVisited);
+        boolean isLiked = checkIfEventIsLiked(user, event);
+        return EventDetailResponse.of(event, isVisited, isLiked, visitCount, likeCount);
     }
 
     private boolean checkIfEventIsLiked(User user, CulturalEvent event) {
