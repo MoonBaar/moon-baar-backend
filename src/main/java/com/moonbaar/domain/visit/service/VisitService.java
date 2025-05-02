@@ -6,6 +6,7 @@ import com.moonbaar.domain.user.entity.User;
 import com.moonbaar.domain.visit.dto.VisitRequest;
 import com.moonbaar.domain.visit.dto.VisitResponse;
 import com.moonbaar.domain.visit.entity.Visit;
+import com.moonbaar.domain.visit.exception.EventNotActiveException;
 import com.moonbaar.domain.visit.exception.InvalidLocationException;
 import com.moonbaar.domain.visit.exception.RecentlyVisitedException;
 import com.moonbaar.domain.visit.repository.VisitRepository;
@@ -50,8 +51,21 @@ public class VisitService {
     }
 
     private void validateVisitRequest(User user, CulturalEvent event, VisitRequest request) {
+        checkEventIsActive(event);
         checkNotRecentlyVisited(user, event);
         checkLocationValid(event, request);
+    }
+
+    private void checkEventIsActive(CulturalEvent event) {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (event.getStartDate().isAfter(now)) {
+            throw new EventNotActiveException();
+        }
+
+        if (event.getEndDate() != null && event.getEndDate().isBefore(now)) {
+            throw new EventNotActiveException();
+        }
     }
 
     private void checkNotRecentlyVisited(User user, CulturalEvent event) {
