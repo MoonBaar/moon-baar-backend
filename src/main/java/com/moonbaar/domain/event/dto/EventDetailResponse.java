@@ -27,13 +27,11 @@ public record EventDetailResponse(
         String hmpgAddr,
         BigDecimal latitude,
         BigDecimal longitude,
-        boolean isVisited,
-        boolean isLiked,
         long visitCount,
         long likeCount
 ) {
 
-    public static EventDetailResponse of(CulturalEvent event, boolean isVisited, boolean isLiked, long visitCount, long likeCount) {
+    public static EventDetailResponse of(CulturalEvent event, long visitCount, long likeCount) {
         String categoryName = Optional.ofNullable(event.getCategory())
                 .map(Category::getName)
                 .orElse(null);
@@ -64,8 +62,6 @@ public record EventDetailResponse(
                 event.getHmpgAddr(),
                 event.getLatitude(),
                 event.getLongitude(),
-                isVisited,
-                isLiked,
                 visitCount,
                 likeCount
         );

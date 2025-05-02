@@ -8,6 +8,7 @@ import com.moonbaar.domain.event.entity.CulturalEvent;
 import com.moonbaar.domain.event.repository.CulturalEventRepository;
 import com.moonbaar.domain.event.repository.CulturalEventSpecifications;
 import com.moonbaar.domain.like.repository.LikedEventRepository;
+import com.moonbaar.domain.event.dto.EventUserStatusResponse;
 import com.moonbaar.domain.user.entity.User;
 import com.moonbaar.domain.visit.repository.VisitRepository;
 import java.util.List;
@@ -63,30 +64,16 @@ public class EventService {
         long visitCount = visitRepository.countByEventId(eventId);
         long likeCount = likedEventRepository.countByEventId(eventId);
 
-        return EventDetailResponse.of(event, false, false, visitCount, likeCount);
+        return EventDetailResponse.of(event, visitCount, likeCount);
     }
 
-    public EventDetailResponse getEventDetailForUser(User user, Long eventId) {
+    public EventUserStatusResponse getUserEventStatus(User user, Long eventId) {
         CulturalEvent event = eventProvider.getEventById(eventId);
-        long visitCount = visitRepository.countByEventId(eventId);
-        long likeCount = likedEventRepository.countByEventId(eventId);
 
-        boolean isVisited = checkIfEventIsVisited(user, event);
-        boolean isLiked = checkIfEventIsLiked(user, event);
-        return EventDetailResponse.of(event, isVisited, isLiked, visitCount, likeCount);
-    }
-
-    private boolean checkIfEventIsLiked(User user, CulturalEvent event) {
-        if (user == null) {
-            return false;
-        }
-        return likedEventRepository.existsByUserAndEvent(user, event);
-    }
-
-    private boolean checkIfEventIsVisited(User user, CulturalEvent event) {
-        if (user == null) {
-            return false;
-        }
-        return visitRepository.existsByUserAndEvent(user, event);
+        return EventUserStatusResponse.of(
+                event.getId(),
+                visitRepository.existsByUserAndEvent(user, event),
+                likedEventRepository.existsByUserAndEvent(user, event)
+        );
     }
 }
