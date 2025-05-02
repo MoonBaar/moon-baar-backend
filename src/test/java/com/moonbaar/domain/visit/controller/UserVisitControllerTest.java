@@ -45,11 +45,11 @@ public class UserVisitControllerTest {
         // given
         LocalDateTime now = LocalDateTime.now();
         VisitItemResponse visit1 = new VisitItemResponse(
-                1L, 1L, "서울시극단 [코믹]", "세종M씨어터",
+                1L, "서울시극단 [코믹]", "세종M씨어터",
                 "https://example.com/image1.jpg", now.minusDays(3));
 
         VisitItemResponse visit2 = new VisitItemResponse(
-                2L, 2L, "노원문화예술회관 국악예술단 정기공연", "노원문화예술회관 대공연장",
+                2L, "노원문화예술회관 국악예술단 정기공연", "노원문화예술회관 대공연장",
                 "https://example.com/image2.jpg", now.minusDays(7));
 
         VisitListResponse response = new VisitListResponse(2L, 1, 1, List.of(visit1, visit2));

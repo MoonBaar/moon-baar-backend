@@ -6,7 +6,6 @@ import java.util.List;
 
 public record VisitItemResponse(
         Long id,
-        Long eventId,
         String title,
         String place,
         String mainImg,
@@ -15,7 +14,6 @@ public record VisitItemResponse(
 
     public static VisitItemResponse from(Visit visit) {
         return new VisitItemResponse(
-                visit.getId(),
                 visit.getEvent().getId(),
                 visit.getEvent().getTitle(),
                 visit.getEvent().getPlace(),
