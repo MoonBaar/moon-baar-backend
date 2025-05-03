@@ -19,8 +19,7 @@ public record EventSummaryResponse(
         boolean isFree,
         String mainImg,
         BigDecimal latitude,
-        BigDecimal longitude,
-        boolean isVisited
+        BigDecimal longitude
 ) {
 
     public static EventSummaryResponse from(CulturalEvent event) {
@@ -37,8 +36,7 @@ public record EventSummaryResponse(
                 isFreeEvent,
                 event.getMainImg(),
                 event.getLatitude(),
-                event.getLongitude(),
-                false
+                event.getLongitude()
         );
     }
 
