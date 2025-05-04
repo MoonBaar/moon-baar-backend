@@ -5,7 +5,6 @@ import com.moonbaar.domain.event.dto.EventDetailResponse;
 import com.moonbaar.domain.event.dto.EventListResponse;
 import com.moonbaar.domain.event.dto.EventSearchRequest;
 import com.moonbaar.domain.event.service.EventService;
-import com.moonbaar.domain.event.dto.EventUserStatusResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,23 +23,31 @@ public class EventController {
     private final EventService eventService;
 
     @GetMapping
-    public EventListResponse searchEvents(@ModelAttribute @Valid EventSearchRequest request) {
+    public EventListResponse searchEvents(
+            @ModelAttribute @Valid EventSearchRequest request) {
+
         return eventService.searchEvents(request);
     }
 
-    @GetMapping("/{eventId}")
-    public EventDetailResponse getEventDetail(
-            @PathVariable Long eventId,
+    @GetMapping("/with-status")
+    public EventListResponse searchEventsWithUserStatus(
+            @ModelAttribute @Valid EventSearchRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-            return eventService.getEventDetail(eventId);
+        return eventService.searchEventsWithUserStatus(userDetails.getUser(), request);
     }
 
-    @GetMapping("/{eventId}/user-status")
-    public EventUserStatusResponse getEventStatus(
+    @GetMapping("/{eventId}")
+    public EventDetailResponse getEventDetail(@PathVariable Long eventId) {
+
+        return eventService.getEventDetail(eventId);
+    }
+
+    @GetMapping("/with-status/{eventId}")
+    public EventDetailResponse getEventDetailWithUserStatus(
             @PathVariable Long eventId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        return eventService.getUserEventStatus(userDetails.getUser(), eventId);
+        return eventService.getEventDetailWithUserStatus(userDetails.getUser(), eventId);
     }
 }
