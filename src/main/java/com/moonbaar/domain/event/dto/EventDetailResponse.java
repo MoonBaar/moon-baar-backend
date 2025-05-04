@@ -28,10 +28,12 @@ public record EventDetailResponse(
         BigDecimal latitude,
         BigDecimal longitude,
         long visitCount,
-        long likeCount
+        long likeCount,
+        boolean isVisited,
+        boolean isLiked
 ) {
 
-    public static EventDetailResponse of(CulturalEvent event, long visitCount, long likeCount) {
+    public static EventDetailResponse of(CulturalEvent event, long visitCount, long likeCount, boolean isVisited, boolean isLiked) {
         String categoryName = Optional.ofNullable(event.getCategory())
                 .map(Category::getName)
                 .orElse(null);
@@ -63,7 +65,9 @@ public record EventDetailResponse(
                 event.getLatitude(),
                 event.getLongitude(),
                 visitCount,
-                likeCount
+                likeCount,
+                isVisited,
+                isLiked
         );
     }
 }
