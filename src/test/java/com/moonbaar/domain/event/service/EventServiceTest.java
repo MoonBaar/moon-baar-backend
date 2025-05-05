@@ -8,7 +8,6 @@ import com.moonbaar.common.exception.BusinessException;
 import com.moonbaar.domain.category.entity.Category;
 import com.moonbaar.domain.district.entity.District;
 import com.moonbaar.domain.event.dto.EventDetailResponse;
-import com.moonbaar.domain.event.dto.EventUserStatusResponse;
 import com.moonbaar.domain.event.entity.CulturalEvent;
 import com.moonbaar.domain.event.exeption.EventErrorCode;
 import com.moonbaar.domain.event.exeption.EventNotFoundException;
@@ -132,75 +131,5 @@ class EventServiceTest {
         assertThatThrownBy(() -> eventService.getEventDetail(nonExistingId))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", EventErrorCode.EVENT_NOT_FOUND);
-    }
-
-    @Test
-    @DisplayName("유저와 이벤트 아이디로 이벤트 상태 정보를 조회할 수 있다")
-    void getUserEventStatus_ReturnsCorrectStatus() {
-        // given
-        when(eventProvider.getEventById(EVENT_ID)).thenReturn(testEvent);
-        when(visitRepository.existsByUserAndEvent(testUser, testEvent)).thenReturn(true);
-        when(likedEventRepository.existsByUserAndEvent(testUser, testEvent)).thenReturn(true);
-
-        // when
-        EventUserStatusResponse response = eventService.getUserEventStatus(testUser, EVENT_ID);
-
-        // then
-        assertThat(response).isNotNull();
-        assertThat(response.eventId()).isEqualTo(EVENT_ID);
-        assertThat(response.isVisited()).isTrue();
-        assertThat(response.isLiked()).isTrue();
-    }
-
-    @Test
-    @DisplayName("좋아요와 방문을 하지 않은 이벤트는 false로 표시된다")
-    void getUserEventStatus_WithNoInteractions_ReturnsFalse() {
-        // given
-        when(eventProvider.getEventById(EVENT_ID)).thenReturn(testEvent);
-        when(visitRepository.existsByUserAndEvent(testUser, testEvent)).thenReturn(false);
-        when(likedEventRepository.existsByUserAndEvent(testUser, testEvent)).thenReturn(false);
-
-        // when
-        EventUserStatusResponse response = eventService.getUserEventStatus(testUser, EVENT_ID);
-
-        // then
-        assertThat(response).isNotNull();
-        assertThat(response.eventId()).isEqualTo(EVENT_ID);
-        assertThat(response.isVisited()).isFalse();
-        assertThat(response.isLiked()).isFalse();
-    }
-
-    @Test
-    @DisplayName("방문만 한 이벤트는 isVisited만 true로 표시된다")
-    void getUserEventStatus_WithOnlyVisit_ReturnsCorrectStatus() {
-        // given
-        when(eventProvider.getEventById(EVENT_ID)).thenReturn(testEvent);
-        when(visitRepository.existsByUserAndEvent(testUser, testEvent)).thenReturn(true);
-        when(likedEventRepository.existsByUserAndEvent(testUser, testEvent)).thenReturn(false);
-
-        // when
-        EventUserStatusResponse response = eventService.getUserEventStatus(testUser, EVENT_ID);
-
-        // then
-        assertThat(response).isNotNull();
-        assertThat(response.isVisited()).isTrue();
-        assertThat(response.isLiked()).isFalse();
-    }
-
-    @Test
-    @DisplayName("좋아요만 한 이벤트는 isLiked만 true로 표시된다")
-    void getUserEventStatus_WithOnlyLike_ReturnsCorrectStatus() {
-        // given
-        when(eventProvider.getEventById(EVENT_ID)).thenReturn(testEvent);
-        when(visitRepository.existsByUserAndEvent(testUser, testEvent)).thenReturn(false);
-        when(likedEventRepository.existsByUserAndEvent(testUser, testEvent)).thenReturn(true);
-
-        // when
-        EventUserStatusResponse response = eventService.getUserEventStatus(testUser, EVENT_ID);
-
-        // then
-        assertThat(response).isNotNull();
-        assertThat(response.isVisited()).isFalse();
-        assertThat(response.isLiked()).isTrue();
     }
 }

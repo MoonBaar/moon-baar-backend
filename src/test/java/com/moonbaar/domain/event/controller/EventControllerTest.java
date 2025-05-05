@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.moonbaar.common.config.SecurityTestConfig;
+import com.moonbaar.common.security.WithMockCustomUser;
 import com.moonbaar.domain.event.dto.EventDetailResponse;
 import com.moonbaar.domain.event.exeption.EventErrorCode;
 import com.moonbaar.domain.event.exeption.EventNotFoundException;
@@ -36,7 +37,7 @@ class EventControllerTest {
     private final Long MOCK_USER_ID = 1L;
     private final Long EVENT_ID = 1L;
 
-    private EventDetailResponse createMockResponse(long visitCount, long likeCount) {
+    private EventDetailResponse createMockResponse(long visitCount, long likeCount, boolean isVisited, boolean isLiked) {
         LocalDateTime startDate = LocalDateTime.now().plusDays(1);
         LocalDateTime endDate = LocalDateTime.now().plusDays(3);
 
@@ -61,7 +62,9 @@ class EventControllerTest {
                 new BigDecimal("37.5725"),
                 new BigDecimal("126.9760"),
                 visitCount,
-                likeCount
+                likeCount,
+                isVisited,
+                isLiked
         );
     }
 
@@ -69,7 +72,7 @@ class EventControllerTest {
     @DisplayName("행사 상세 정보를 조회할 수 있다")
     void getEventDetail_NonAuthenticatedUser() throws Exception {
         // given
-        when(eventService.getEventDetail(EVENT_ID)).thenReturn(createMockResponse(1, 100));
+        when(eventService.getEventDetail(EVENT_ID)).thenReturn(createMockResponse(1, 100, false, false));
 
         // when & then
         mockMvc.perform(get("/events/{eventId}", EVENT_ID)
@@ -79,6 +82,25 @@ class EventControllerTest {
                 .andExpect(jsonPath("$.title").value("서울시극단 [코믹]"))
                 .andExpect(jsonPath("$.visitCount").value(1))
                 .andExpect(jsonPath("$.likeCount").value(100));
+    }
+
+    @Test
+    @DisplayName("로그인한 유저는 유저 정보와 함께 행사 상세 정보를 조회할 수 있다")
+    @WithMockCustomUser
+    void getEventDetailWithUserStatus_AuthenticatedUser() throws Exception {
+        // given
+        when(eventService.getEventDetail(EVENT_ID)).thenReturn(createMockResponse(1, 100, true, false));
+
+        // when & then
+        mockMvc.perform(get("/events/{eventId}", EVENT_ID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(EVENT_ID.intValue()))
+                .andExpect(jsonPath("$.title").value("서울시극단 [코믹]"))
+                .andExpect(jsonPath("$.visitCount").value(1))
+                .andExpect(jsonPath("$.likeCount").value(100))
+                .andExpect(jsonPath("$.isVisited").value(true))
+                .andExpect(jsonPath("$.isLiked").value(false));
     }
 
     @Test

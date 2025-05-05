@@ -19,4 +19,18 @@ public record EventListResponse(
                 EventSummaryResponse.fromList(eventsPage.getContent())
         );
     }
+
+    public static EventListResponse fromWithVisitStatus(
+            Page<CulturalEvent> eventsPage,
+            List<Long> visitedEventIds) {
+
+        return new EventListResponse(
+                eventsPage.getTotalElements(),
+                eventsPage.getTotalPages(),
+                eventsPage.getNumber() + 1,
+                EventSummaryResponse.fromListWithVisitStatus(
+                        eventsPage.getContent(),
+                        visitedEventIds)
+        );
+    }
 }

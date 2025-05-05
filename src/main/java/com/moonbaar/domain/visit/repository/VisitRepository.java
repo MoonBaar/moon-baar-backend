@@ -20,6 +20,11 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
 
     Optional<Visit> findTopByUserAndEventOrderByVisitedAtDesc(User user, CulturalEvent event);
 
+    @Query("SELECT v.event.id FROM Visit v WHERE v.user.id = :userId AND v.event.id IN :eventIds")
+    List<Long> findVisitedEventIdsByUserIdAndEventIdsIn(
+            @Param("userId") Long userId,
+            @Param("eventIds") List<Long> eventIds);
+
     @Query("SELECT v FROM Visit v JOIN FETCH v.event WHERE v.user = :user AND v.visitedAt >= :startDateTime")
     Page<Visit> findByUserAndVisitedAtAfter(@Param("user") User user,
                                             @Param("startDateTime") LocalDateTime startDateTime,
