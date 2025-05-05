@@ -1,6 +1,5 @@
 package com.moonbaar.common.oauth.handler;
 
-import com.moonbaar.common.config.CorsProperties;
 import com.moonbaar.common.oauth.CustomAuthorizationRequestRepository;
 import com.moonbaar.common.oauth.CustomOAuth2User;
 import com.moonbaar.common.utils.JwtUtils;
@@ -23,13 +22,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-    private final CorsProperties corsProperties;
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
     private final CustomAuthorizationRequestRepository authorizationRequestRepository;
-
-    @Value("${frontend.redirect-url}")
-    private String redirectUrl;
 
     @Value("${jwt.access-token-expiration}")
     private long accessTokenExpirationMs;
@@ -72,15 +67,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);
 
-        String redirectUri = "/";
         String finalRedirectUri = authorizationRequestRepository.extractRedirectUri(request);
-        if (finalRedirectUri != null && !finalRedirectUri.isBlank()) {
-            redirectUri = finalRedirectUri;
-            // 사용 후 세션에서 제거
-            authorizationRequestRepository.removeRedirectUri(request);
-            System.out.println("세션에서 가져온 redirect_uri: " + redirectUri);
-        }
+        log.info("세션에서 가져온 redirect_uri: {}", finalRedirectUri);
 
-        response.sendRedirect(redirectUri + "/login-success");
+        response.sendRedirect(finalRedirectUri);
     }
 }
