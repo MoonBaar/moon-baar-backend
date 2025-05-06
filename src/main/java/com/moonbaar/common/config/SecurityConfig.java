@@ -1,6 +1,7 @@
 package com.moonbaar.common.config;
 
 import com.moonbaar.common.filter.JwtAuthenticationFilter;
+import com.moonbaar.common.oauth.CustomAuthorizationRequestRepository;
 import com.moonbaar.common.oauth.handler.OAuth2SuccessHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ public class SecurityConfig {
     private final CorsProperties corsProperties;
     private final OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final CustomAuthorizationRequestRepository customAuthorizationRequestRepository;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
@@ -51,6 +53,9 @@ public class SecurityConfig {
                 )
 
                 .oauth2Login(oauth -> oauth
+                        .authorizationEndpoint(auth -> auth
+                                .authorizationRequestRepository(customAuthorizationRequestRepository)
+                        )
                         // 로그인 후 사용자 정보 가져올 때 사용할 서비스 지정
                         .userInfoEndpoint(userInfo -> userInfo .userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)

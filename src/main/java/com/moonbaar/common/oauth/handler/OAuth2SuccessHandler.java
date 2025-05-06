@@ -1,6 +1,6 @@
 package com.moonbaar.common.oauth.handler;
 
-import com.moonbaar.common.config.CorsProperties;
+import com.moonbaar.common.oauth.CustomAuthorizationRequestRepository;
 import com.moonbaar.common.oauth.CustomOAuth2User;
 import com.moonbaar.common.utils.JwtUtils;
 import com.moonbaar.domain.user.entity.User;
@@ -22,12 +22,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-    private final CorsProperties corsProperties;
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
-
-    @Value("${frontend.redirect-url}")
-    private String redirectUrl;
+    private final CustomAuthorizationRequestRepository authorizationRequestRepository;
 
     @Value("${jwt.access-token-expiration}")
     private long accessTokenExpirationMs;
@@ -70,6 +67,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);
 
-        response.sendRedirect(redirectUrl);
+        String finalRedirectUri = authorizationRequestRepository.extractRedirectUri(request);
+        log.info("세션에서 가져온 redirect_uri: {}", finalRedirectUri);
+
+        response.sendRedirect(finalRedirectUri);
     }
 }
