@@ -112,7 +112,7 @@ public class BadgeService {
         Set<String> ownedBadgeCodes = userBadgeRepository.findCodeByUserId(user.getId());
 
         BadgeProgressResponse badgeProgressResponse = null;
-        double maximumProgressRate = 0.0;
+        double maximumProgressRate = -1.0;
 
         for (BadgeCode badgeCode : BadgeCode.values()) {
             if (ownedBadgeCodes.contains(badgeCode.name())) {
@@ -135,7 +135,7 @@ public class BadgeService {
                 badgeProgressResponse = BadgeProgressResponse.of(badge, progress, target);
             }
         }
+
         return Optional.ofNullable(badgeProgressResponse);
     }
-
 }
