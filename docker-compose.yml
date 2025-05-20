@@ -34,6 +34,8 @@ services:
       SEOUL_API_KEY: ${SEOUL_API_KEY}
     networks:
       - app-network
+    volumes:
+      - ./backups:/backups
     restart: unless-stopped
 
   mariadb:

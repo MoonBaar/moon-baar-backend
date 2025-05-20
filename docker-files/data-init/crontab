@@ -1,0 +1,5 @@
+# 매일 0시(정오)와 12시(자정)에 데이터 수집 및 백업 실행
+0 0,12 * * * cd /app && python get_cultural_events.py >> /var/log/cron.log 2>&1 && /app/backup_database.sh >> /var/log/cron.log 2>&1
+
+# 로그 파일을 비우는 작업 (선택사항)
+0 1 * * 0 cat /dev/null > /var/log/cron.log
