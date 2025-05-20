@@ -19,10 +19,10 @@ services:
       - app-network
     restart: unless-stopped
 
-  data-init:
+  fetch-data:
     build:
-      context: ./docker-files/data-init
-    container_name: mb-data-init
+      context: ./docker-files/fetch-data
+    container_name: mb-fetch-data
     depends_on:
       mariadb:
         condition: service_healthy
@@ -32,8 +32,11 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
       SEOUL_API_KEY: ${SEOUL_API_KEY}
+      TZ: "Asia/Seoul"
     networks:
       - app-network
+    volumes:
+      - ./backups:/backups
     restart: unless-stopped
 
   mariadb:
