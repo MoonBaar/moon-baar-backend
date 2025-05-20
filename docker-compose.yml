@@ -19,10 +19,10 @@ services:
       - app-network
     restart: unless-stopped
 
-  data-init:
+  fetch-data:
     build:
-      context: ./docker-files/data-init
-    container_name: mb-data-init
+      context: ./docker-files/fetch-data
+    container_name: mb-fetch-data
     depends_on:
       mariadb:
         condition: service_healthy
