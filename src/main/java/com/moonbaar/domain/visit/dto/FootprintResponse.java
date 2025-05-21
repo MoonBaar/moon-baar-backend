@@ -19,7 +19,7 @@ public record FootprintResponse(
         CulturalEvent event = visit.getEvent();
 
         return new FootprintResponse(
-                visit.getId(),
+                event.getId(),
                 event.getTitle(),
                 event.getPlace(),
                 event.getMainImg(),
