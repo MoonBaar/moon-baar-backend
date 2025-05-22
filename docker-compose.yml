@@ -1,0 +1,88 @@
+services:
+  nginx:
+    build:
+      context: ./docker-files/nginx
+    container_name: mb-nginx
+    depends_on:
+      backend:
+        condition: service_started
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SSL_CERT_PATH: ${SSL_CERT_PATH}
+      SSL_CERT_KEY: ${SSL_CERT_KEY}
+      DOMAIN_NAME: ${DOMAIN_NAME}
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  fetch-data:
+    build:
+      context: ./docker-files/fetch-data
+    container_name: mb-fetch-data
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      SEOUL_API_KEY: ${SEOUL_API_KEY}
+      TZ: "Asia/Seoul"
+    networks:
+      - app-network
+    volumes:
+      - ./backups:/backups
+    restart: unless-stopped
+
+  mariadb:
+    image: mariadb:latest
+    container_name: mb-mariadb
+    healthcheck:
+      test: ["CMD", "mariadb", "-h", "localhost", "-u${DB_USER}", "-p${DB_PASSWORD}", "-e", "SELECT 1"]
+      start_period: 30s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  backend:
+    image: ${BACKEND_IMAGE}
+    platform: linux/arm64
+    container_name: mb-backend
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      BASE_URL: ${BASE_URL}
+    ports:
+      - "${BACKEND_PORT}:8080"
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mariadb-data:
